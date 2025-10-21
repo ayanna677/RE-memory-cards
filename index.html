@@ -18,7 +18,7 @@
       <span>⭐ Score: <span id="score">0</span></span>
     </div>
     <div class="buttons">
-      <button id="startBtn">🎮 Start RE Protocol Memory Game</button>
+      <button id="startBtn">🎮 Start Game</button>
       <button id="restartBtn" disabled>🔁 Restart</button>
       <button id="musicToggle">🔊</button>
     </div>
@@ -30,16 +30,11 @@
   <!-- Sounds -->
   <audio id="flipSound" src="sounds/flip.mp3"></audio>
   <audio id="matchSound" src="sounds/match.mp3"></audio>
+  <audio id="errorSound" src="sounds/error.mp3"></audio>
   <audio id="winSound" src="sounds/win.mp3"></audio>
   <audio id="bgMusic" src="sounds/bg-music.mp3" loop></audio>
-
-  <script>
-    // Example: Update your win alert to show project name
-    function showWinAlert(time, errors, score) {
-      alert(`🎉 You Win RE Protocol Memory Cards!\n⏱ Time: ${time}s\n❌ Errors: ${errors}\n⭐ Score: ${score}`);
-    }
-  </script>
 
   <script src="cards.js"></script>
 </body>
 </html>
+
