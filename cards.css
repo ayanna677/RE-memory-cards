@@ -1,4 +1,6 @@
-/* Body & Background */
+/* ------------------- */
+/* Global Styles       */
+/* ------------------- */
 body {
   margin: 0;
   font-family: 'Poppins', Arial, sans-serif;
@@ -12,57 +14,117 @@ body {
   min-height: 100vh;
 }
 
-/* Header & Stats */
-header h1 { font-size: 3rem; margin: 20px 0 10px; text-shadow: 3px 3px 0 #00ffff, 5px 5px 10px rgba(0,0,0,0.5); }
-header h2 { font-size: 1.5rem; margin-bottom: 15px; color: #0ff; }
-.stats { display: flex; justify-content: center; gap: 25px; margin-bottom: 15px; font-size: 1.2rem; }
+/* ------------------- */
+/* Header & Stats      */
+/* ------------------- */
+header h1 {
+  font-size: 3rem;
+  margin: 20px 0 10px;
+  text-shadow: 0 0 10px #0ff, 0 0 25px #0055ff;
+}
+
+header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #0ff;
+  text-shadow: 0 0 8px #0ff;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
 .stats span { font-weight: bold; color: #0ff; }
 
-/* Buttons */
-.buttons { margin-bottom: 20px; }
+/* ------------------- */
+/* Buttons             */
+/* ------------------- */
+.buttons {
+  margin-bottom: 20px;
+}
+
 button {
-  background: linear-gradient(135deg, #00ffff, #0055ff);
+  background: linear-gradient(45deg,#00ffff,#0055ff);
   border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
+  padding: 12px 25px;
+  border-radius: 20px;
   color: #fff;
-  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
-button:hover:enabled { transform: scale(1.08); box-shadow: 0 0 20px #0ff; }
+
+button:hover:enabled { 
+  transform: scale(1.1);
+  box-shadow: 0 0 25px #0ff;
+}
+
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Game Board */
+/* ------------------- */
+/* Game Board          */
+/* ------------------- */
 #board {
   display: grid;
-  grid-template-columns: repeat(5, 90px);
-  grid-gap: 10px;
-  padding: 15px;
-  background: rgba(0,0,0,0.25);
-  border-radius: 20px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 0 25px rgba(0,255,255,0.3);
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  grid-gap: 12px;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 50px rgba(0,255,255,0.4);
   justify-content: center;
+  margin-bottom: 30px;
 }
 
-/* Card Styles */
+/* ------------------- */
+/* Card Styles         */
+/* ------------------- */
 .card {
   width: 90px;
   height: 120px;
-  border-radius: 10px;
+  perspective: 1000px;
+  margin: 5px;
   cursor: pointer;
-  transform-style: preserve-3d;
-  transition: transform 0.6s, box-shadow 0.3s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-.card:hover { transform: scale(1.05); box-shadow: 0 0 18px #0ff; }
-.matched { animation: sparkle 1s infinite alternate; pointer-events: none; }
-@keyframes sparkle { from { box-shadow: 0 0 10px #0ff; } to { box-shadow: 0 0 25px #0055ff; } }
 
-/* Responsive */
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card.flip .card-inner { transform: rotateY(180deg); }
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+}
+
+.card-back { transform: rotateY(180deg); }
+
+.matched {
+  animation: sparkle 1s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  from { box-shadow: 0 0 10px #0ff; }
+  to { box-shadow: 0 0 25px #0055ff; }
+}
+
+/* ------------------- */
+/* Responsive          */
+/* ------------------- */
 @media (max-width: 600px) {
   #board { grid-template-columns: repeat(4, 70px); grid-gap: 8px; }
   .card { width: 70px; height: 100px; }
@@ -70,3 +132,4 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   header h1 { font-size: 2rem; }
   header h2 { font-size: 1rem; }
 }
+
