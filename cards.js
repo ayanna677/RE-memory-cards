@@ -1,40 +1,48 @@
-// =====================
-// 🌟 POKÉMON CARDS MATCH GAME LOGIC
-// =====================
+// --------------------
+// Variables
+// --------------------
+let errors = 0,
+    score = 0,
+    time = 0,
+    timerInterval;
 
-let errors = 0;
-let score = 0;
-let time = 0;
-let timerInterval;
+let rows = 4,
+    columns = 5;
+
+let board = [],
+    cardSet = [],
+    card1 = null,
+    card2 = null;
+
 let gameStarted = false;
 
-const rows = 4;
-const columns = 5;
-let board = [];
-let cardSet;
-let card1Selected;
-let card2Selected;
-
+// Card types
 const cardList = [
-  "darkness", "double", "fairy", "fighting", "fire",
-  "grass", "lightning", "metal", "psychic", "water"
+  "darkness","double","fairy","fighting","fire",
+  "grass","lightning","metal","psychic","water"
 ];
 
-// 🎵 Sounds
-const flipSound = document.getElementById("flipSound");
-const matchSound = document.getElementById("matchSound");
-const winSound = document.getElementById("winSound");
-
-// 🕹️ Buttons and Stats
-const startBtn = document.getElementById("startBtn");
-const restartBtn = document.getElementById("restartBtn");
+// --------------------
+// DOM Elements
+// --------------------
 const timerEl = document.getElementById("timer");
 const errorsEl = document.getElementById("errors");
 const scoreEl = document.getElementById("score");
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const musicToggle = document.getElementById("musicToggle");
+const boardDiv = document.getElementById("board");
 
-// =====================
-// 🎮 Event Listeners
-// =====================
+// Sounds
+const flipSound = document.getElementById("flipSound");
+const matchSound = document.getElementById("matchSound");
+const errorSound = document.getElementById("errorSound");
+const winSound = document.getElementById("winSound");
+const bgMusic = document.getElementById("bgMusic");
+
+// --------------------
+// Event Listeners
+// --------------------
 startBtn.addEventListener("click", () => {
   startBtn.disabled = true;
   restartBtn.disabled = false;
@@ -47,50 +55,59 @@ restartBtn.addEventListener("click", () => {
   startGame();
 });
 
-// =====================
-// ♻️ Reset Game
-// =====================
-function resetGame() {
-  clearInterval(timerInterval);
-  document.getElementById("board").innerHTML = "";
-  board = [];
-  errors = 0;
-  score = 0;
-  time = 0;
-  errorsEl.innerText = errors;
-  scoreEl.innerText = score;
-  timerEl.innerText = `${time}s`;
-  card1Selected = null;
-  card2Selected = null;
-  shuffleCards();
-}
+musicToggle.addEventListener("click", () => {
+  if (bgMusic.paused) {
+    bgMusic.play();
+    musicToggle.textContent = "🔊";
+  } else {
+    bgMusic.pause();
+    musicToggle.textContent = "🔇";
+  }
+});
 
-// =====================
-// 🔀 Shuffle Cards
-// =====================
+// --------------------
+// Functions
+// --------------------
+
+// Shuffle cards
 function shuffleCards() {
-  cardSet = cardList.concat(cardList); // duplicate each
+  cardSet = cardList.concat(cardList);
   for (let i = 0; i < cardSet.length; i++) {
-    const j = Math.floor(Math.random() * cardSet.length);
+    let j = Math.floor(Math.random() * cardSet.length);
     [cardSet[i], cardSet[j]] = [cardSet[j], cardSet[i]];
   }
 }
 
-// =====================
-// 🚀 Start Game
-// =====================
+// Reset game
+function resetGame() {
+  clearInterval(timerInterval);
+  boardDiv.innerHTML = "";
+  board = [];
+  errors = 0;
+  score = 0;
+  time = 0;
+  card1 = null;
+  card2 = null;
+
+  errorsEl.innerText = errors;
+  scoreEl.innerText = score;
+  timerEl.innerText = time + "s";
+
+  shuffleCards();
+}
+
+// Start game
 function startGame() {
-  let boardDiv = document.getElementById("board");
   boardDiv.innerHTML = "";
   for (let r = 0; r < rows; r++) {
     let row = [];
     for (let c = 0; c < columns; c++) {
-      let cardImg = cardSet.pop();
+      const cardImg = cardSet.pop();
       row.push(cardImg);
 
-      let card = document.createElement("img");
+      const card = document.createElement("img");
       card.id = `${r}-${c}`;
-      card.src = "back.jpg";
+      card.src = "images/back.jpg";
       card.classList.add("card");
       card.addEventListener("click", selectCard);
       boardDiv.append(card);
@@ -101,86 +118,69 @@ function startGame() {
   startTimer();
 }
 
-// =====================
-// ⏰ Timer
-// =====================
+// Timer
 function startTimer() {
   timerInterval = setInterval(() => {
     time++;
-    timerEl.innerText = `${time}s`;
+    timerEl.innerText = time + "s";
   }, 1000);
 }
 
-// =====================
-// 🃏 Select Card
-// =====================
+// Card selection
 function selectCard() {
-  if (!gameStarted) gameStarted = true;
-
-  if (this.src.includes("back")) {
+  if (this.src.includes("back.jpg")) {
     flipSound.play();
 
-    if (!card1Selected) {
-      card1Selected = this;
-      revealCard(card1Selected);
-    } else if (!card2Selected && this !== card1Selected) {
-      card2Selected = this;
-      revealCard(card2Selected);
-      setTimeout(checkMatch, 800);
+    if (!card1) {
+      card1 = this;
+      revealCard(card1);
+    } else if (!card2 && this !== card1) {
+      card2 = this;
+      revealCard(card2);
+      setTimeout(checkMatch, 600);
     }
   }
 }
 
-// =====================
-// 🔍 Reveal Card
-// =====================
+// Reveal card
 function revealCard(card) {
   const [r, c] = card.id.split("-").map(Number);
-  card.src = board[r][c] + ".jpg";
+  card.src = `images/${board[r][c]}.jpg`;
 }
 
-// =====================
-// ✅ Check Match
-// =====================
+// Check match
 function checkMatch() {
-  if (card1Selected.src === card2Selected.src) {
+  if (card1.src === card2.src) {
     matchSound.play();
     score += 10;
     scoreEl.innerText = score;
 
-    // Disable click for matched cards
-    card1Selected.removeEventListener("click", selectCard);
-    card2Selected.removeEventListener("click", selectCard);
+    card1.classList.add("matched");
+    card2.classList.add("matched");
 
-    card1Selected.classList.add("matched");
-    card2Selected.classList.add("matched");
-
-    checkWin();
+    if (document.querySelectorAll(".matched").length === rows * columns) {
+      gameWin();
+    }
   } else {
+    errorSound.play();
     errors++;
     errorsEl.innerText = errors;
 
     setTimeout(() => {
-      card1Selected.src = "back.jpg";
-      card2Selected.src = "back.jpg";
-    }, 600);
+      card1.src = "images/back.jpg";
+      card2.src = "images/back.jpg";
+    }, 300);
   }
 
-  card1Selected = null;
-  card2Selected = null;
+  card1 = null;
+  card2 = null;
 }
 
-// =====================
-// 🏆 Check for Win
-// =====================
-function checkWin() {
-  const allCards = document.querySelectorAll(".card");
-  const flipped = [...allCards].filter(card => card.classList.contains("matched"));
-  if (flipped.length === allCards.length) {
-    clearInterval(timerInterval);
-    winSound.play();
-    setTimeout(() => {
-      alert(`🎉 You Win!\n⏱ Time: ${time}s\n❌ Errors: ${errors}\n⭐ Score: ${score}`);
-    }, 500);
-  }
+// Win
+function gameWin() {
+  clearInterval(timerInterval);
+  winSound.play();
+  setTimeout(() => {
+    alert(`🎉 You Win RE Protocol Memory Cards!\n⏱ Time: ${time}s\n❌ Errors: ${errors}\n⭐ Score: ${score}`);
+  }, 200);
 }
