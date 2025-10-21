@@ -8,72 +8,30 @@
 </head>
 
 <body>
-  <!-- 🌈 Animated Background Overlay -->
-  <div class="bg-overlay"></div>
+  <!-- Header & Stats -->
+  <header>
+    <h1>Pokémon Cards Match</h1>
+    <div class="stats">
+      <span>🕑 Time: <span id="timer">0s</span></span>
+      <span>❌ Errors: <span id="errors">0</span></span>
+      <span>⭐ Score: <span id="score">0</span></span>
+    </div>
+    <div class="buttons">
+      <button id="startBtn">🎮 Start Game</button>
+      <button id="restartBtn" disabled>🔁 Restart</button>
+      <button id="musicToggle">🔊</button>
+    </div>
+  </header>
 
-  <!-- 🔥 Intro Screen -->
-  <div id="intro-screen">
-    <div class="pokeball"></div>
-    <h1 class="intro-title">Pokémon Cards Match</h1>
-    <button id="playNowBtn" class="btn-main">✨ Play Now</button>
-  </div>
+  <!-- Game Board -->
+  <main id="board"></main>
 
-  <!-- 🧠 Main Game Section -->
-  <div id="game-container" class="hidden">
-    <header>
-      <h1 class="game-title">Pokémon Cards Match</h1>
-
-      <div class="stats">
-        <h3>🕑 Time: <span id="timer">0s</span></h3>
-        <h3>❌ Errors: <span id="errors">0</span></h3>
-        <h3>⭐ Score: <span id="score">0</span></h3>
-      </div>
-
-      <div class="buttons">
-        <button id="startBtn">🎮 Start Game</button>
-        <button id="restartBtn" disabled>🔁 Restart</button>
-        <button id="musicToggle">🔊</button>
-      </div>
-    </header>
-
-    <div id="board"></div>
-  </div>
-
-  <!-- 🎵 Sound Effects -->
+  <!-- Sounds -->
   <audio id="flipSound" src="sounds/flip.mp3"></audio>
   <audio id="matchSound" src="sounds/match.mp3"></audio>
   <audio id="winSound" src="sounds/win.mp3"></audio>
   <audio id="bgMusic" src="sounds/bg-music.mp3" loop></audio>
 
-  <script>
-    // 🪄 Intro Screen Logic
-    const introScreen = document.getElementById("intro-screen");
-    const playNowBtn = document.getElementById("playNowBtn");
-    const gameContainer = document.getElementById("game-container");
-    const bgMusic = document.getElementById("bgMusic");
-    const musicToggle = document.getElementById("musicToggle");
-
-    playNowBtn.addEventListener("click", () => {
-      introScreen.classList.add("fade-out");
-      setTimeout(() => {
-        introScreen.style.display = "none";
-        gameContainer.classList.remove("hidden");
-        bgMusic.play();
-      }, 1000);
-    });
-
-    musicToggle.addEventListener("click", () => {
-      if (bgMusic.paused) {
-        bgMusic.play();
-        musicToggle.textContent = "🔊";
-      } else {
-        bgMusic.pause();
-        musicToggle.textContent = "🔇";
-      }
-    });
-  </script>
-
   <script src="cards.js"></script>
 </body>
 </html>
-
