@@ -1,22 +1,133 @@
+/* 🌈 Global Styles */
 body {
-    background: url("./pokemon-bg.jpg");
+    background: url("./pokemon-bg.jpg") no-repeat center center fixed;
     background-size: cover;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
     text-align: center;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    user-select: none;
 }
 
+/* 🧢 Title */
+h1 {
+    font-size: 3rem;
+    color: #ffcb05;
+    text-shadow: 3px 3px 0 #2a75bb, 5px 5px 10px rgba(0, 0, 0, 0.5);
+    margin-top: 20px;
+}
+
+/* 🕹️ Control Panel */
+#controls {
+    margin: 15px auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+button {
+    background: linear-gradient(135deg, #2a75bb, #ffcb05);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 15px #ffcb05;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+/* 💫 Game Info */
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.stats span {
+    color: #ffcb05;
+    font-weight: bold;
+}
+
+/* 🃏 Game Board */
 #board {
-    height: 532px;
-    width: 475px;
+    height: auto;
+    width: 500px;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
-    background-color: whitesmoke;
-    border: 10px solid lightgrey;
+    justify-content: center;
+    background-color: rgba(255,255,255,0.15);
+    border: 6px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 10px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 25px rgba(255,203,5,0.4);
 }
 
+/* 🪄 Card Effects */
 .card {
-    height: 128px;
+    height: 120px;
     width: 90px;
-    margin: 2.5px;
+    margin: 6px;
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255,203,5,0.6);
+}
+
+/* ✨ When matched */
+.matched {
+    animation: glow 1s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+/* 🌟 Glow Animation */
+@keyframes glow {
+    from { box-shadow: 0 0 10px #2a75bb; }
+    to { box-shadow: 0 0 20px #ffcb05; }
+}
+
+/* 🕑 Responsive Design */
+@media (max-width: 600px) {
+    #board {
+        width: 90%;
+    }
+
+    .card {
+        height: 100px;
+        width: 75px;
+        margin: 4px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 10px 18px;
+    }
 }
