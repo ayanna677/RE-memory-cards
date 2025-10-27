@@ -93,11 +93,16 @@ function checkMatch() {
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
 
-    if (matchedPairs === (rows * columns) / 2) {
-      clearInterval(timerInterval);
-      winSound.play();
-      setTimeout(() => alert(`🎉 You win! Total Score: ${score}`), 400);
-    }
+   if (matchedPairs === (rows * columns) / 2) {
+  clearInterval(timerInterval);
+  winSound.play();
+
+  const banner = document.getElementById("winBanner");
+  banner.classList.add("show");
+
+  // Disable all cards so user can’t click after winning
+  document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+}
   } else {
     errorSound.play();
     errors++;
@@ -144,3 +149,9 @@ function toggleMusic() {
     bgMusic.pause();
   }
 }
+
+document.getElementById("playAgainBtn").addEventListener("click", () => {
+  document.getElementById("winBanner").classList.remove("show");
+  restartGame();
+});
+
