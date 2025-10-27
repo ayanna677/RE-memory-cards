@@ -30,6 +30,7 @@ const winSound = new Audio("sounds/win.mp3");
 const bgMusic = new Audio("sounds/bg-music.mp3");
 bgMusic.loop = true;
 
+// Buttons
 document.getElementById("startBtn").addEventListener("click", startGame);
 document.getElementById("restartBtn").addEventListener("click", restartGame);
 document.getElementById("musicToggle").addEventListener("click", toggleMusic);
@@ -79,7 +80,7 @@ function flipCard() {
       card1 = this;
     } else {
       card2 = this;
-      document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+      document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
       setTimeout(checkMatch, 800);
     }
   }
@@ -93,16 +94,17 @@ function checkMatch() {
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
 
-   if (matchedPairs === (rows * columns) / 2) {
-  clearInterval(timerInterval);
-  winSound.play();
+    // ✅ Show Winning Banner Instead of Alert
+    if (matchedPairs === (rows * columns) / 2) {
+      clearInterval(timerInterval);
+      winSound.play();
 
-  const banner = document.getElementById("winBanner");
-  banner.classList.add("show");
+      const banner = document.getElementById("winBanner");
+      banner.classList.add("show");
 
-  // Disable all cards so user can’t click after winning
-  document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
-}
+      // Disable clicking after win
+      document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
+    }
   } else {
     errorSound.play();
     errors++;
@@ -117,7 +119,7 @@ function checkMatch() {
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "auto");
+    document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "auto"));
     document.getElementById("score").innerText = score;
   }, 900);
 }
@@ -150,8 +152,11 @@ function toggleMusic() {
   }
 }
 
+// ✅ Play Again Button for Banner
 document.getElementById("playAgainBtn").addEventListener("click", () => {
   document.getElementById("winBanner").classList.remove("show");
   restartGame();
 });
+
+
 
