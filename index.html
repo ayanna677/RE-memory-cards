@@ -27,6 +27,14 @@
     <div id="board"></div>
   </main>
 
+  <!-- ✅ Winning Banner (Place inside <body>, above the script) -->
+  <div id="winBanner" class="hidden">
+    <div class="banner-content">
+      🎉 Congratulations! You Won! 🎉<br>
+      <button id="playAgainBtn">Play Again</button>
+    </div>
+  </div>
+
   <!-- Sounds -->
   <audio id="flipSound" src="sounds/flip.mp3" preload="auto"></audio>
   <audio id="matchSound" src="sounds/match.mp3" preload="auto"></audio>
@@ -34,6 +42,7 @@
   <audio id="winSound" src="sounds/win.mp3" preload="auto"></audio>
   <audio id="bgMusic" src="sounds/bg-music.mp3" preload="auto" loop></audio>
 
+  <!-- Script should be at the very bottom -->
   <script src="cards.js"></script>
 </body>
 </html>
