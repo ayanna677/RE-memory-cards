@@ -77,15 +77,24 @@ function createBoard() {
 }
 
 function flipCard() {
+  // Ignore clicks while two cards are already flipped
+  if (card1 && card2) return;
+
   if (this.src.includes("back")) {
     flipSound.play();
 
+    // Show the front of the card
     this.src = "images/" + this.dataset.value + ".jpg";
 
     if (!card1) {
       card1 = this;
     } else if (!card2 && this !== card1) {
       card2 = this;
+
+      // Disable further clicks temporarily
+      document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+
+      // Delay before checking match
       setTimeout(checkMatch, 800);
     }
   }
@@ -93,25 +102,43 @@ function flipCard() {
 
 function checkMatch() {
   if (card1.dataset.value === card2.dataset.value) {
+    // ✅ Correct match
     matchSound.play();
     score += 10;
     matchedPairs++;
 
-    if (matchedPairs === 8) {
+    // Keep matched cards visible and clickable off
+    card1.style.pointerEvents = "none";
+    card2.style.pointerEvents = "none";
+
+    if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
       winSound.play();
-      alert("🎉 You win! Total Score: " + score);
+      setTimeout(() => {
+        alert("🎉 You win! Total Score: " + score);
+      }, 400);
     }
   } else {
+    // ❌ Wrong match, flip back
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
-    card1.src = "images/back.jpg";
-    card2.src = "images/back.jpg";
+
+    setTimeout(() => {
+      card1.src = "images/back.jpg";
+      card2.src = "images/back.jpg";
+    }, 400);
   }
 
+  // Re-enable clicks
+  setTimeout(() => {
+    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "auto");
+  }, 600);
+
+  // Reset selections
   card1 = null;
   card2 = null;
+
   document.getElementById("score").innerText = score;
 }
 
@@ -142,3 +169,4 @@ function toggleMusic() {
     bgMusic.pause();
   }
 }
+
