@@ -11,16 +11,14 @@
   <header>
     <h1>RE Protocol Memory Cards</h1>
     <h2>Test your memory and match all the cards!</h2>
-
     <div class="stats">
       <span>🕑 Time: <span id="timer">0s</span></span>
       <span>❌ Errors: <span id="errors">0</span></span>
       <span>⭐ Score: <span id="score">0</span></span>
     </div>
-
     <div class="buttons">
       <button id="startBtn">🎮 Start Game</button>
-      <button id="restartBtn" style="display: none;">🔁 Restart</button>
+      <button id="restartBtn" disabled>🔁 Restart</button>
       <button id="musicToggle">🔊</button>
     </div>
   </header>
@@ -29,21 +27,13 @@
     <div id="board"></div>
   </main>
 
-  <!-- 🎵 Game Sounds -->
-  <!-- Make sure these match your /sounds folder -->
-  <audio id="flipSound" src="sounds/flip.mp3"></audio>
-  <audio id="matchSound" src="sounds/match.mp3"></audio>
-  <audio id="errorSound" src="sounds/error.mp3"></audio>
-  <audio id="winSound" src="sounds/win.mp3"></audio>
-  <audio id="bgMusic" src="sounds/bg-music.mp3" loop></audio>
+  <!-- Sounds -->
+  <audio id="flipSound" src="sounds/flip.mp3" preload="auto"></audio>
+  <audio id="matchSound" src="sounds/match.mp3" preload="auto"></audio>
+  <audio id="errorSound" src="sounds/error.mp3" preload="auto"></audio>
+  <audio id="winSound" src="sounds/win.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="sounds/bg-music.mp3" preload="auto" loop></audio>
 
-  <!-- 🎮 Main Script (placed at the end of the body) -->
-  <script src="cards.js" defer></script>
+  <script src="cards.js"></script>
 </body>
 </html>
-
-
-
-
-
-
