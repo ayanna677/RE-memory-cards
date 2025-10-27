@@ -166,6 +166,10 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
   restartGame();
 });
 
+// ✅ Show Start Banner again when the page reloads
+window.addEventListener("load", () => {
+  document.getElementById("startBanner").classList.remove("hide");
+});
 
 
 
