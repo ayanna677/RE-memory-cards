@@ -31,7 +31,6 @@ const bgMusic = new Audio("sounds/bg-music.mp3");
 bgMusic.loop = true;
 
 // Buttons
-document.getElementById("startBtn").addEventListener("click", startGame);
 document.getElementById("restartBtn").addEventListener("click", restartGame);
 document.getElementById("musicToggle").addEventListener("click", toggleMusic);
 
@@ -170,6 +169,7 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
 window.addEventListener("load", () => {
   document.getElementById("startBanner").classList.remove("hide");
 });
+
 
 
 
