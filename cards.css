@@ -66,7 +66,9 @@ button:hover {
     transform: scale(1.05);
 }
 
-/* WINNING BANNER */
+/* =========================
+   WINNING BANNER
+========================= */
 #winBanner {
     position: fixed;
     top: 0;
@@ -82,22 +84,12 @@ button:hover {
     z-index: 999;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
 #winBanner.show {
     opacity: 1;
     visibility: visible;
-}
-
-.banner-content {
-    background: rgba(255, 215, 0, 0.2);
-    border: 3px solid #ffcc00;
-    padding: 40px 60px;
-    border-radius: 20px;
-    text-shadow: 1px 1px 4px #000;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-    text-align: center;
 }
 
 #playAgainBtn {
@@ -115,7 +107,9 @@ button:hover {
     background: #ffaa00;
 }
 
-/* START BANNER */
+/* =========================
+   START BANNER
+========================= */
 #startBanner {
     position: fixed;
     top: 0;
@@ -128,8 +122,10 @@ button:hover {
     justify-content: center;
     align-items: center;
     z-index: 999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
     animation: fadeIn 1s ease forwards;
-    transition: opacity 0.6s ease;
 }
 
 #startBanner.hide {
@@ -137,6 +133,7 @@ button:hover {
     visibility: hidden;
 }
 
+/* Shared banner style */
 .banner-content {
     background: rgba(255, 215, 0, 0.15);
     border: 3px solid #ffcc00;
@@ -146,12 +143,12 @@ button:hover {
     box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
     transform: scale(0.95);
     animation: popIn 0.8s ease forwards;
+    text-shadow: 1px 1px 3px #000;
 }
 
 .banner-content h2 {
     font-size: 2.4rem;
     color: #ffcc00;
-    text-shadow: 1px 1px 3px #000;
     margin-bottom: 10px;
 }
 
