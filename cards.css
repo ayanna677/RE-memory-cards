@@ -59,10 +59,9 @@ button:hover {
     border-radius: 12px;
     object-fit: cover;
     cursor: pointer;
-    transition: transform 0.3s;
+    transition: transform 0.2s ease;
 }
 
 .card:hover {
     transform: scale(1.05);
 }
-
