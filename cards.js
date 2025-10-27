@@ -43,8 +43,16 @@ function shuffleCards() {
   }
 }
 
+document.getElementById("startGameBtn").addEventListener("click", () => {
+  const startBanner = document.getElementById("startBanner");
+  startBanner.classList.add("hide");
+
+  setTimeout(() => {
+    startGame();
+  }, 600); // waits for fade animation
+});
+
 function startGame() {
-  document.getElementById("startBtn").style.display = "none";
   document.getElementById("restartBtn").disabled = false;
 
   shuffleCards();
@@ -157,6 +165,7 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
   document.getElementById("winBanner").classList.remove("show");
   restartGame();
 });
+
 
 
 
