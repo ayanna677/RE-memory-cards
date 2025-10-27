@@ -77,13 +77,15 @@ function createBoard() {
 }
 
 function flipCard() {
-  // Ignore clicks while two cards are already flipped
+  // Don’t allow clicking if two cards are already flipped
   if (card1 && card2) return;
 
-  if (this.src.includes("back")) {
-    flipSound.play();
+  // Get only the file name part (ignore full URL)
+  const currentSrc = this.src.split("/").pop();
 
-    // Show the front of the card
+  // Flip only if it's showing the back
+  if (currentSrc === "back.jpg") {
+    flipSound.play();
     this.src = "images/" + this.dataset.value + ".jpg";
 
     if (!card1) {
@@ -91,10 +93,11 @@ function flipCard() {
     } else if (!card2 && this !== card1) {
       card2 = this;
 
-      // Disable further clicks temporarily
-      document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+      // Disable clicks temporarily during comparison
+      document.querySelectorAll(".card").forEach(card => {
+        card.style.pointerEvents = "none";
+      });
 
-      // Delay before checking match
       setTimeout(checkMatch, 800);
     }
   }
@@ -107,39 +110,40 @@ function checkMatch() {
     score += 10;
     matchedPairs++;
 
-    // Keep matched cards visible and clickable off
+    // Leave them open, but prevent re-clicking
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
 
+    // Check for win
     if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
       winSound.play();
       setTimeout(() => {
         alert("🎉 You win! Total Score: " + score);
-      }, 400);
+      }, 500);
     }
   } else {
-    // ❌ Wrong match, flip back
+    // ❌ Wrong match
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
 
+    // Flip both cards back after a short delay
     setTimeout(() => {
       card1.src = "images/back.jpg";
       card2.src = "images/back.jpg";
-    }, 400);
+    }, 600);
   }
 
-  // Re-enable clicks
+  // Reset selections and re-enable clicks
   setTimeout(() => {
-    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "auto");
-  }, 600);
-
-  // Reset selections
-  card1 = null;
-  card2 = null;
-
-  document.getElementById("score").innerText = score;
+    card1 = null;
+    card2 = null;
+    document.querySelectorAll(".card").forEach(card => {
+      card.style.pointerEvents = "auto";
+    });
+    document.getElementById("score").innerText = score;
+  }, 900);
 }
 
 function startTimer() {
@@ -169,4 +173,5 @@ function toggleMusic() {
     bgMusic.pause();
   }
 }
+
 
