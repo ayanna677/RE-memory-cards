@@ -3,9 +3,8 @@ let score = 0;
 let time = 0;
 let timerInterval;
 
-let cardList = [
+const cardList = [
   "darkness",
-  "double",
   "fairy",
   "fighting",
   "fire",
@@ -19,143 +18,127 @@ let cardList = [
 let cardSet = [];
 let board = [];
 let rows = 4;
-let columns = 5;
+let columns = 4;
 let card1 = null;
 let card2 = null;
+let matchedPairs = 0;
 
-// Audio elements
-const flipSound = document.getElementById("flipSound");
-const matchSound = document.getElementById("matchSound");
-const errorSound = document.getElementById("errorSound");
-const winSound = document.getElementById("winSound");
-const bgMusic = document.getElementById("bgMusic");
+// Sound elements
+const flipSound = new Audio("sounds/flip.mp3");
+const matchSound = new Audio("sounds/match.mp3");
+const errorSound = new Audio("sounds/error.mp3");
+const winSound = new Audio("sounds/win.mp3");
+const bgMusic = new Audio("sounds/bg-music.mp3");
+bgMusic.loop = true;
 
-// Buttons
-const startBtn = document.getElementById("startBtn");
-const restartBtn = document.getElementById("restartBtn");
-const musicToggle = document.getElementById("musicToggle");
-
-startBtn.addEventListener("click", startGame);
-restartBtn.addEventListener("click", restartGame);
-musicToggle.addEventListener("click", toggleMusic);
-
-function startGame() {
-  // enable audio playback on user gesture
-  flipSound.play().catch(() => {});
-  flipSound.pause();
-
-  startBtn.style.display = "none";
-  restartBtn.style.display = "inline-block";
-
-  resetStats();
-  shuffleCards();
-  createBoard();
-
-  timerInterval = setInterval(() => {
-    time++;
-    document.getElementById("timer").innerText = time + "s";
-  }, 1000);
-
-  bgMusic.volume = 0.4;
-  bgMusic.play().catch(() => {});
-}
-
-function restartGame() {
-  clearInterval(timerInterval);
-  document.getElementById("board").innerHTML = "";
-  board = [];
-  startGame();
-}
-
-function resetStats() {
-  errors = 0;
-  score = 0;
-  time = 0;
-  card1 = null;
-  card2 = null;
-  document.getElementById("errors").innerText = "0";
-  document.getElementById("score").innerText = "0";
-  document.getElementById("timer").innerText = "0s";
-}
+document.getElementById("startBtn").addEventListener("click", startGame);
+document.getElementById("restartBtn").addEventListener("click", restartGame);
+document.getElementById("musicToggle").addEventListener("click", toggleMusic);
 
 function shuffleCards() {
   cardSet = cardList.concat(cardList);
-  for (let i = 0; i < cardSet.length; i++) {
-    const j = Math.floor(Math.random() * cardSet.length);
+  for (let i = cardSet.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
     [cardSet[i], cardSet[j]] = [cardSet[j], cardSet[i]];
   }
 }
 
+function startGame() {
+  document.getElementById("startBtn").style.display = "none";
+  document.getElementById("restartBtn").disabled = false;
+
+  shuffleCards();
+  createBoard();
+  startTimer();
+  bgMusic.play();
+}
+
 function createBoard() {
-  const boardContainer = document.getElementById("board");
-  boardContainer.innerHTML = "";
+  const boardDiv = document.getElementById("board");
+  boardDiv.innerHTML = "";
+  board = [];
+
   for (let r = 0; r < rows; r++) {
-    board[r] = [];
+    let row = [];
     for (let c = 0; c < columns; c++) {
-      const cardValue = cardSet.pop();
-      board[r][c] = cardValue;
+      if (cardSet.length === 0) break;
+      const cardImg = cardSet.pop();
 
       const card = document.createElement("img");
-      card.id = `${r}-${c}`;
-      card.src = "images/back.jpg"; // ✅ fix path
+      card.src = "images/back.jpg";
+      card.dataset.value = cardImg;
       card.classList.add("card");
-      card.addEventListener("click", selectCard);
-      boardContainer.append(card);
+      card.addEventListener("click", flipCard);
+      boardDiv.appendChild(card);
+      row.push(cardImg);
     }
+    board.push(row);
   }
 }
 
-function selectCard() {
+function flipCard() {
   if (this.src.includes("back")) {
-    flipSound.currentTime = 0;
     flipSound.play();
+
+    this.src = "images/" + this.dataset.value + ".jpg";
 
     if (!card1) {
       card1 = this;
-      const [r, c] = this.id.split("-").map(Number);
-      card1.src = "images/" + board[r][c] + ".jpg"; // ✅ fix path
     } else if (!card2 && this !== card1) {
       card2 = this;
-      const [r, c] = this.id.split("-").map(Number);
-      card2.src = "images/" + board[r][c] + ".jpg"; // ✅ fix path
-      setTimeout(checkMatch, 700);
+      setTimeout(checkMatch, 800);
     }
   }
 }
 
 function checkMatch() {
-  if (card1.src === card2.src) {
-    matchSound.currentTime = 0;
+  if (card1.dataset.value === card2.dataset.value) {
     matchSound.play();
     score += 10;
-    document.getElementById("score").innerText = score;
-    card1 = null;
-    card2 = null;
+    matchedPairs++;
 
-    if (score === cardList.length * 10) {
+    if (matchedPairs === 8) {
       clearInterval(timerInterval);
-      bgMusic.pause();
       winSound.play();
-      setTimeout(() => alert("🎉 You matched all cards! Great job!"), 400);
+      alert("🎉 You win! Total Score: " + score);
     }
   } else {
-    errorSound.currentTime = 0;
     errorSound.play();
-    card1.src = "images/back.jpg"; // ✅ fix path
-    card2.src = "images/back.jpg"; // ✅ fix path
     errors++;
     document.getElementById("errors").innerText = errors;
-    card1 = null;
-    card2 = null;
+    card1.src = "images/back.jpg";
+    card2.src = "images/back.jpg";
   }
+
+  card1 = null;
+  card2 = null;
+  document.getElementById("score").innerText = score;
+}
+
+function startTimer() {
+  time = 0;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    time++;
+    document.getElementById("timer").innerText = time + "s";
+  }, 1000);
+}
+
+function restartGame() {
+  errors = 0;
+  score = 0;
+  matchedPairs = 0;
+  document.getElementById("errors").innerText = 0;
+  document.getElementById("score").innerText = 0;
+  document.getElementById("timer").innerText = "0s";
+  clearInterval(timerInterval);
+  startGame();
 }
 
 function toggleMusic() {
   if (bgMusic.paused) {
     bgMusic.play();
-    musicToggle.textContent = "🔊";
   } else {
     bgMusic.pause();
-    musicToggle.textContent = "🔇";
   }
 }
