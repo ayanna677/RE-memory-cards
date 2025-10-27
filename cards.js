@@ -64,10 +64,28 @@ function createBoard() {
       if (cardSet.length === 0) break;
       const cardImg = cardSet.pop();
 
-      const card = document.createElement("img");
-      card.src = "images/back.jpg";
-      card.dataset.value = cardImg;
+      // Create card wrapper
+      const card = document.createElement("div");
       card.classList.add("card");
+      card.dataset.value = cardImg;
+
+      // Inner layer for 3D flip
+      const inner = document.createElement("div");
+      inner.classList.add("card-inner");
+
+      // Front image (the actual symbol)
+      const front = document.createElement("img");
+      front.src = "images/" + cardImg + ".jpg";
+      front.classList.add("card-front");
+
+      // Back image
+      const back = document.createElement("img");
+      back.src = "images/back.jpg";
+      back.classList.add("card-back");
+
+      inner.appendChild(front);
+      inner.appendChild(back);
+      card.appendChild(inner);
       card.addEventListener("click", flipCard);
       boardDiv.appendChild(card);
       row.push(cardImg);
@@ -77,25 +95,24 @@ function createBoard() {
 }
 
 function flipCard() {
+  // Prevent clicking more than 2 cards at once
   if (card1 && card2) return;
 
-  const currentSrc = this.src.split("/").pop();
-
-  if (currentSrc === "back.jpg") {
+  // Flip animation
+  if (!this.classList.contains("flipped")) {
     flipSound.play();
-    this.src = "images/" + this.dataset.value + ".jpg";
+    this.classList.add("flipped");
 
     if (!card1) {
       card1 = this;
     } else if (!card2 && this !== card1) {
       card2 = this;
 
-      // Disable all clicks while checking
       document.querySelectorAll(".card").forEach(card => {
         card.style.pointerEvents = "none";
       });
 
-      setTimeout(checkMatch, 700);
+      setTimeout(checkMatch, 1000);
     }
   }
 }
@@ -106,29 +123,37 @@ function checkMatch() {
     score += 10;
     matchedPairs++;
 
-    // Keep matched cards open
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
+
+    if (matchedPairs === (rows * columns) / 2) {
+      clearInterval(timerInterval);
+      winSound.play();
+      setTimeout(() => {
+        alert("🎉 You win! Total Score: " + score);
+      }, 600);
+    }
   } else {
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
 
-    // Flip them back after delay
+    // Flip both cards back
     setTimeout(() => {
-      card1.src = "images/back.jpg";
-      card2.src = "images/back.jpg";
-    }, 500);
+      card1.classList.remove("flipped");
+      card2.classList.remove("flipped");
+    }, 700);
   }
 
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.getElementById("score").innerText = score;
     document.querySelectorAll(".card").forEach(card => {
-      if (card.src.includes("back.jpg")) card.style.pointerEvents = "auto";
+      card.style.pointerEvents = "auto";
     });
-  }, 800);
+    document.getElementById("score").innerText = score;
+  }, 1100);
+}
 
   // Win check
   if (matchedPairs === (rows * columns) / 2) {
@@ -167,3 +192,4 @@ function toggleMusic() {
     bgMusic.pause();
   }
 }
+
