@@ -1,113 +1,161 @@
-var errors = 0;
-var cardList = [
-    "darkness",
-    "double",
-    "fairy",
-    "fighting",
-    "fire",
-    "grass",
-    "lightning",
-    "metal",
-    "psychic",
-    "water"
-]
+let errors = 0;
+let score = 0;
+let time = 0;
+let timerInterval;
 
+let cardList = [
+  "darkness",
+  "double",
+  "fairy",
+  "fighting",
+  "fire",
+  "grass",
+  "lightning",
+  "metal",
+  "psychic",
+  "water"
+];
 
-var cardSet;
-var board = [];
-var rows = 4;
-var columns =5;
+let cardSet = [];
+let board = [];
+let rows = 4;
+let columns = 5;
+let card1 = null;
+let card2 = null;
 
-var card1Selected;
-var card2Selected;
+// Audio elements
+const flipSound = document.getElementById("flipSound");
+const matchSound = document.getElementById("matchSound");
+const errorSound = document.getElementById("errorSound");
+const winSound = document.getElementById("winSound");
+const bgMusic = document.getElementById("bgMusic");
 
-window.onload = function() {
-    shuffleCards();
-    startGame();
+// Buttons
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const musicToggle = document.getElementById("musicToggle");
+
+startBtn.addEventListener("click", startGame);
+restartBtn.addEventListener("click", restartGame);
+musicToggle.addEventListener("click", toggleMusic);
+
+function startGame() {
+  // enable audio playback on user gesture
+  flipSound.play().catch(() => {});
+  flipSound.pause();
+
+  startBtn.style.display = "none";
+  restartBtn.style.display = "inline-block";
+
+  resetStats();
+  shuffleCards();
+  createBoard();
+
+  timerInterval = setInterval(() => {
+    time++;
+    document.getElementById("timer").innerText = time + "s";
+  }, 1000);
+
+  bgMusic.volume = 0.4;
+  bgMusic.play().catch(() => {});
+}
+
+function restartGame() {
+  clearInterval(timerInterval);
+  document.getElementById("board").innerHTML = "";
+  board = [];
+  startGame();
+}
+
+function resetStats() {
+  errors = 0;
+  score = 0;
+  time = 0;
+  card1 = null;
+  card2 = null;
+  document.getElementById("errors").innerText = "0";
+  document.getElementById("score").innerText = "0";
+  document.getElementById("timer").innerText = "0s";
 }
 
 function shuffleCards() {
-    cardSet = cardList.concat(cardList); //two of each card
-    console.log(cardSet);
-    //shuffle
-    for (let i = 0; i < cardSet.length; i++) {
-        let j = Math.floor(Math.random() * cardSet.length); //get random index
-        //swap
-        let temp = cardSet[i];
-        cardSet[i] = cardSet[j];
-        cardSet[j] = temp;
-    }
-    console.log(cardSet);
+  cardSet = cardList.concat(cardList);
+  for (let i = 0; i < cardSet.length; i++) {
+    const j = Math.floor(Math.random() * cardSet.length);
+    [cardSet[i], cardSet[j]] = [cardSet[j], cardSet[i]];
+  }
 }
 
-function startGame() {
-    //arrange the board 4x5
-    for (let r = 0; r < rows; r++) {
-        let row = [];
-        for (let c = 0; c < columns; c++) {
-            let cardImg = cardSet.pop();
-            row.push(cardImg); //JS
+function createBoard() {
+  const boardContainer = document.getElementById("board");
+  boardContainer.innerHTML = "";
+  for (let r = 0; r < rows; r++) {
+    board[r] = [];
+    for (let c = 0; c < columns; c++) {
+      const cardValue = cardSet.pop();
+      board[r][c] = cardValue;
 
-            // <img id="0-0" class="card" src="water.jpg">
-            let card = document.createElement("img");
-            card.id = r.toString() + "-" + c.toString();
-            card.src = cardImg + ".jpg";
-            card.classList.add("card");
-            card.addEventListener("click", selectCard);
-            document.getElementById("board").append(card);
-
-        }
-        board.push(row);
+      const card = document.createElement("img");
+      card.id = `${r}-${c}`;
+      card.src = "images/back.jpg"; // ✅ fix path
+      card.classList.add("card");
+      card.addEventListener("click", selectCard);
+      boardContainer.append(card);
     }
-
-    console.log(board);
-    setTimeout(hideCards, 1000);
-}
-
-function hideCards() {
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns; c++) {
-            let card = document.getElementById(r.toString() + "-" + c.toString());
-            card.src = "back.jpg";
-        }
-    }
+  }
 }
 
 function selectCard() {
+  if (this.src.includes("back")) {
+    flipSound.currentTime = 0;
+    flipSound.play();
 
-    if (this.src.includes("back")) {
-        if (!card1Selected) {
-            card1Selected = this;
-
-            let coords = card1Selected.id.split("-"); //"0-1" -> ["0", "1"]
-            let r = parseInt(coords[0]);
-            let c = parseInt(coords[1]);
-
-            card1Selected.src = board[r][c] + ".jpg";
-        }
-        else if (!card2Selected && this != card1Selected) {
-            card2Selected = this;
-
-            let coords = card2Selected.id.split("-"); //"0-1" -> ["0", "1"]
-            let r = parseInt(coords[0]);
-            let c = parseInt(coords[1]);
-
-            card2Selected.src = board[r][c] + ".jpg";
-            setTimeout(update, 1000);
-        }
+    if (!card1) {
+      card1 = this;
+      const [r, c] = this.id.split("-").map(Number);
+      card1.src = "images/" + board[r][c] + ".jpg"; // ✅ fix path
+    } else if (!card2 && this !== card1) {
+      card2 = this;
+      const [r, c] = this.id.split("-").map(Number);
+      card2.src = "images/" + board[r][c] + ".jpg"; // ✅ fix path
+      setTimeout(checkMatch, 700);
     }
-
+  }
 }
 
-function update() {
-    //if cards aren't the same, flip both back
-    if (card1Selected.src != card2Selected.src) {
-        card1Selected.src = "back.jpg";
-        card2Selected.src = "back.jpg";
-        errors += 1;
-        document.getElementById("errors").innerText = errors;
-    }
+function checkMatch() {
+  if (card1.src === card2.src) {
+    matchSound.currentTime = 0;
+    matchSound.play();
+    score += 10;
+    document.getElementById("score").innerText = score;
+    card1 = null;
+    card2 = null;
 
-    card1Selected = null;
-    card2Selected = null;
+    if (score === cardList.length * 10) {
+      clearInterval(timerInterval);
+      bgMusic.pause();
+      winSound.play();
+      setTimeout(() => alert("🎉 You matched all cards! Great job!"), 400);
+    }
+  } else {
+    errorSound.currentTime = 0;
+    errorSound.play();
+    card1.src = "images/back.jpg"; // ✅ fix path
+    card2.src = "images/back.jpg"; // ✅ fix path
+    errors++;
+    document.getElementById("errors").innerText = errors;
+    card1 = null;
+    card2 = null;
+  }
+}
+
+function toggleMusic() {
+  if (bgMusic.paused) {
+    bgMusic.play();
+    musicToggle.textContent = "🔊";
+  } else {
+    bgMusic.pause();
+    musicToggle.textContent = "🔇";
+  }
 }
