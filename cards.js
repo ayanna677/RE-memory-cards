@@ -16,14 +16,12 @@ const cardList = [
 ];
 
 let cardSet = [];
-let board = [];
-let rows = 4;
-let columns = 4;
+let rows = 3;
+let columns = 6;
 let card1 = null;
 let card2 = null;
 let matchedPairs = 0;
 
-// Sound elements
 const flipSound = new Audio("sounds/flip.mp3");
 const matchSound = new Audio("sounds/match.mp3");
 const errorSound = new Audio("sounds/error.mp3");
@@ -56,64 +54,38 @@ function startGame() {
 function createBoard() {
   const boardDiv = document.getElementById("board");
   boardDiv.innerHTML = "";
-  board = [];
 
-  for (let r = 0; r < rows; r++) {
-    let row = [];
-    for (let c = 0; c < columns; c++) {
-      if (cardSet.length === 0) break;
-      const cardImg = cardSet.pop();
-
-      // Create card wrapper
-      const card = document.createElement("div");
-      card.classList.add("card");
-      card.dataset.value = cardImg;
-
-      // Inner layer for 3D flip
-      const inner = document.createElement("div");
-      inner.classList.add("card-inner");
-
-      // Front image (the actual symbol)
-      const front = document.createElement("img");
-      front.src = "images/" + cardImg + ".jpg";
-      front.classList.add("card-front");
-
-      // Back image
-      const back = document.createElement("img");
-      back.src = "images/back.jpg";
-      back.classList.add("card-back");
-
-      inner.appendChild(front);
-      inner.appendChild(back);
-      card.appendChild(inner);
-      card.addEventListener("click", flipCard);
-      boardDiv.appendChild(card);
-      row.push(cardImg);
-    }
-    board.push(row);
+  for (let i = 0; i < rows * columns; i++) {
+    const cardName = cardSet[i];
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.innerHTML = `
+      <div class="card-inner">
+        <img class="card-front" src="images/${cardName}.jpg" alt="${cardName}">
+        <img class="card-back" src="images/back.jpg" alt="back">
+      </div>
+    `;
+    card.dataset.value = cardName;
+    card.addEventListener("click", flipCard);
+    boardDiv.appendChild(card);
   }
 }
 
 function flipCard() {
-  // Prevent clicking more than 2 cards at once
+  if (this.classList.contains("flipped")) return;
   if (card1 && card2) return;
 
-  // Flip animation
-  if (!this.classList.contains("flipped")) {
-    flipSound.play();
-    this.classList.add("flipped");
+  flipSound.play();
+  this.classList.add("flipped");
 
-    if (!card1) {
-      card1 = this;
-    } else if (!card2 && this !== card1) {
-      card2 = this;
+  if (!card1) {
+    card1 = this;
+  } else {
+    card2 = this;
 
-      document.querySelectorAll(".card").forEach(card => {
-        card.style.pointerEvents = "none";
-      });
+    document.querySelectorAll(".card").forEach(card => card.style.pointerEvents = "none");
 
-      setTimeout(checkMatch, 1000);
-    }
+    setTimeout(checkMatch, 900);
   }
 }
 
@@ -123,46 +95,34 @@ function checkMatch() {
     score += 10;
     matchedPairs++;
 
+    card1.classList.add("matched");
+    card2.classList.add("matched");
+
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
 
     if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
       winSound.play();
-      setTimeout(() => {
-        alert("🎉 You win! Total Score: " + score);
-      }, 600);
+      setTimeout(() => alert(`🎉 You win! Total Score: ${score}`), 500);
     }
   } else {
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
 
-    // Flip both cards back
     setTimeout(() => {
       card1.classList.remove("flipped");
       card2.classList.remove("flipped");
-    }, 700);
+    }, 800);
   }
 
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card").forEach(card => {
-      card.style.pointerEvents = "auto";
-    });
+    document.querySelectorAll(".card").forEach(card => card.style.pointerEvents = "auto");
     document.getElementById("score").innerText = score;
-  }, 1100);
-}
-
-  // Win check
-  if (matchedPairs === (rows * columns) / 2) {
-    clearInterval(timerInterval);
-    winSound.play();
-    setTimeout(() => {
-      alert("🎉 You win! Total Score: " + score);
-    }, 400);
-  }
+  }, 1000);
 }
 
 function startTimer() {
@@ -192,4 +152,3 @@ function toggleMusic() {
     bgMusic.pause();
   }
 }
-
