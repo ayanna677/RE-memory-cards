@@ -65,3 +65,52 @@ button:hover {
 .card:hover {
     transform: scale(1.05);
 }
+
+/* WINNING BANNER */
+#winBanner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease;
+}
+
+#winBanner.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.banner-content {
+    background: rgba(255, 215, 0, 0.2);
+    border: 3px solid #ffcc00;
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-shadow: 1px 1px 4px #000;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+    text-align: center;
+}
+
+#playAgainBtn {
+    background: #ffcc00;
+    border: none;
+    margin-top: 20px;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#playAgainBtn:hover {
+    background: #ffaa00;
+}
