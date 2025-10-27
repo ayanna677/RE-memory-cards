@@ -77,13 +77,10 @@ function createBoard() {
 }
 
 function flipCard() {
-  // Don’t allow clicking if two cards are already flipped
   if (card1 && card2) return;
 
-  // Get only the file name part (ignore full URL)
   const currentSrc = this.src.split("/").pop();
 
-  // Flip only if it's showing the back
   if (currentSrc === "back.jpg") {
     flipSound.play();
     this.src = "images/" + this.dataset.value + ".jpg";
@@ -93,57 +90,54 @@ function flipCard() {
     } else if (!card2 && this !== card1) {
       card2 = this;
 
-      // Disable clicks temporarily during comparison
+      // Disable all clicks while checking
       document.querySelectorAll(".card").forEach(card => {
         card.style.pointerEvents = "none";
       });
 
-      setTimeout(checkMatch, 800);
+      setTimeout(checkMatch, 700);
     }
   }
 }
 
 function checkMatch() {
   if (card1.dataset.value === card2.dataset.value) {
-    // ✅ Correct match
     matchSound.play();
     score += 10;
     matchedPairs++;
 
-    // Leave them open, but prevent re-clicking
+    // Keep matched cards open
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
-
-    // Check for win
-    if (matchedPairs === (rows * columns) / 2) {
-      clearInterval(timerInterval);
-      winSound.play();
-      setTimeout(() => {
-        alert("🎉 You win! Total Score: " + score);
-      }, 500);
-    }
   } else {
-    // ❌ Wrong match
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
 
-    // Flip both cards back after a short delay
+    // Flip them back after delay
     setTimeout(() => {
       card1.src = "images/back.jpg";
       card2.src = "images/back.jpg";
-    }, 600);
+    }, 500);
   }
 
-  // Reset selections and re-enable clicks
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card").forEach(card => {
-      card.style.pointerEvents = "auto";
-    });
     document.getElementById("score").innerText = score;
-  }, 900);
+    document.querySelectorAll(".card").forEach(card => {
+      if (card.src.includes("back.jpg")) card.style.pointerEvents = "auto";
+    });
+  }, 800);
+
+  // Win check
+  if (matchedPairs === (rows * columns) / 2) {
+    clearInterval(timerInterval);
+    winSound.play();
+    setTimeout(() => {
+      alert("🎉 You win! Total Score: " + score);
+    }, 400);
+  }
 }
 
 function startTimer() {
@@ -173,5 +167,3 @@ function toggleMusic() {
     bgMusic.pause();
   }
 }
-
-
