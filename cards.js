@@ -22,6 +22,7 @@ let card1 = null;
 let card2 = null;
 let matchedPairs = 0;
 
+// Sound elements
 const flipSound = new Audio("sounds/flip.mp3");
 const matchSound = new Audio("sounds/match.mp3");
 const errorSound = new Audio("sounds/error.mp3");
@@ -57,35 +58,30 @@ function createBoard() {
 
   for (let i = 0; i < rows * columns; i++) {
     const cardName = cardSet[i];
-    const card = document.createElement("div");
-    card.classList.add("card");
-    card.innerHTML = `
-      <div class="card-inner">
-        <img class="card-front" src="images/${cardName}.jpg" alt="${cardName}">
-        <img class="card-back" src="images/back.jpg" alt="back">
-      </div>
-    `;
+    const card = document.createElement("img");
+    card.src = "images/back.jpg";
     card.dataset.value = cardName;
+    card.classList.add("card");
     card.addEventListener("click", flipCard);
     boardDiv.appendChild(card);
   }
 }
 
 function flipCard() {
-  if (this.classList.contains("flipped")) return;
   if (card1 && card2) return;
 
-  flipSound.play();
-  this.classList.add("flipped");
+  const currentSrc = this.src.split("/").pop();
+  if (currentSrc === "back.jpg") {
+    flipSound.play();
+    this.src = "images/" + this.dataset.value + ".jpg";
 
-  if (!card1) {
-    card1 = this;
-  } else {
-    card2 = this;
-
-    document.querySelectorAll(".card").forEach(card => card.style.pointerEvents = "none");
-
-    setTimeout(checkMatch, 900);
+    if (!card1) {
+      card1 = this;
+    } else {
+      card2 = this;
+      document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+      setTimeout(checkMatch, 800);
+    }
   }
 }
 
@@ -94,17 +90,13 @@ function checkMatch() {
     matchSound.play();
     score += 10;
     matchedPairs++;
-
-    card1.classList.add("matched");
-    card2.classList.add("matched");
-
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
 
     if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
       winSound.play();
-      setTimeout(() => alert(`🎉 You win! Total Score: ${score}`), 500);
+      setTimeout(() => alert(`🎉 You win! Total Score: ${score}`), 400);
     }
   } else {
     errorSound.play();
@@ -112,17 +104,17 @@ function checkMatch() {
     document.getElementById("errors").innerText = errors;
 
     setTimeout(() => {
-      card1.classList.remove("flipped");
-      card2.classList.remove("flipped");
-    }, 800);
+      card1.src = "images/back.jpg";
+      card2.src = "images/back.jpg";
+    }, 600);
   }
 
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card").forEach(card => card.style.pointerEvents = "auto");
+    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "auto");
     document.getElementById("score").innerText = score;
-  }, 1000);
+  }, 900);
 }
 
 function startTimer() {
