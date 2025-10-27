@@ -1,152 +1,93 @@
-let errors = 0;
-let score = 0;
-let time = 0;
-let timerInterval;
-
-let cardList = [
-  "darkness",
-  "double",
-  "fairy",
-  "fighting",
-  "fire",
-  "grass",
-  "lightning",
-  "metal",
-  "psychic",
-  "water"
-];
-
-let cardSet = [];
-let board = [];
-let rows = 4;
-let columns = 5;
-let card1 = null;
-let card2 = null;
-
-const flipSound = document.getElementById("flipSound");
-const matchSound = document.getElementById("matchSound");
-const errorSound = document.getElementById("errorSound");
-const winSound = document.getElementById("winSound");
-const bgMusic = document.getElementById("bgMusic");
-
-const startBtn = document.getElementById("startBtn");
-const restartBtn = document.getElementById("restartBtn");
-const musicToggle = document.getElementById("musicToggle");
-
-startBtn.addEventListener("click", startGame);
-restartBtn.addEventListener("click", restartGame);
-musicToggle.addEventListener("click", toggleMusic);
-
-function startGame() {
-  startBtn.disabled = true;
-  restartBtn.disabled = false;
-
-  resetStats();
-  shuffleCards();
-  createBoard();
-
-  // Start timer
-  timerInterval = setInterval(() => {
-    time++;
-    document.getElementById("timer").innerText = time + "s";
-  }, 1000);
-
-  // Start background music
-  bgMusic.play();
+body {
+  background: url("./images/pokemon-bg.jpg") center/cover no-repeat;
+  font-family: 'Poppins', Arial, sans-serif;
+  color: #fff;
+  text-align: center;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-function restartGame() {
-  clearInterval(timerInterval);
-  document.getElementById("board").innerHTML = "";
-  board = [];
-  startGame();
+header {
+  margin-top: 20px;
 }
 
-function resetStats() {
-  errors = 0;
-  score = 0;
-  time = 0;
-  card1 = null;
-  card2 = null;
-  document.getElementById("errors").innerText = "0";
-  document.getElementById("score").innerText = "0";
-  document.getElementById("timer").innerText = "0s";
+h1 {
+  font-size: 2.2rem;
+  margin-bottom: 5px;
+  text-shadow: 2px 2px 8px #000;
 }
 
-function shuffleCards() {
-  cardSet = cardList.concat(cardList); // duplicate for pairs
-  for (let i = 0; i < cardSet.length; i++) {
-    const j = Math.floor(Math.random() * cardSet.length);
-    [cardSet[i], cardSet[j]] = [cardSet[j], cardSet[i]];
-  }
+h2 {
+  font-size: 1.2rem;
+  color: #eee;
+  margin-bottom: 15px;
 }
 
-function createBoard() {
-  const boardContainer = document.getElementById("board");
-  boardContainer.innerHTML = "";
-  for (let r = 0; r < rows; r++) {
-    board[r] = [];
-    for (let c = 0; c < columns; c++) {
-      const cardValue = cardSet.pop();
-      board[r][c] = cardValue;
-
-      const card = document.createElement("img");
-      card.id = `${r}-${c}`;
-      card.src = "back.jpg";
-      card.classList.add("card");
-      card.addEventListener("click", selectCard);
-      boardContainer.append(card);
-    }
-  }
+.stats {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 15px;
 }
 
-function selectCard() {
-  if (this.src.includes("back")) {
-    flipSound.play();
-    if (!card1) {
-      card1 = this;
-      const [r, c] = this.id.split("-").map(Number);
-      card1.src = board[r][c] + ".jpg";
-    } else if (!card2 && this !== card1) {
-      card2 = this;
-      const [r, c] = this.id.split("-").map(Number);
-      card2.src = board[r][c] + ".jpg";
-      setTimeout(checkMatch, 800);
-    }
-  }
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
-function checkMatch() {
-  if (card1.src === card2.src) {
-    matchSound.play();
-    score += 10;
-    document.getElementById("score").innerText = score;
-    card1 = null;
-    card2 = null;
-
-    if (score === cardList.length * 10) {
-      clearInterval(timerInterval);
-      bgMusic.pause();
-      winSound.play();
-      alert("🎉 You matched all cards! Great job!");
-    }
-  } else {
-    errorSound.play();
-    card1.src = "back.jpg";
-    card2.src = "back.jpg";
-    errors++;
-    document.getElementById("errors").innerText = errors;
-    card1 = null;
-    card2 = null;
-  }
+button {
+  background: #ffb703;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-function toggleMusic() {
-  if (bgMusic.paused) {
-    bgMusic.play();
-    musicToggle.textContent = "🔊";
-  } else {
-    bgMusic.pause();
-    musicToggle.textContent = "🔇";
-  }
+button:hover {
+  background: #f48c06;
 }
+
+#board-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#board {
+  width: 480px;
+  height: 540px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
+  padding: 10px;
+  border: 6px solid #ccc;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.card {
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+
