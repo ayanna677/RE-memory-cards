@@ -114,3 +114,74 @@ button:hover {
 #playAgainBtn:hover {
     background: #ffaa00;
 }
+
+/* START BANNER */
+#startBanner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    animation: fadeIn 1s ease forwards;
+    transition: opacity 0.6s ease;
+}
+
+#startBanner.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.banner-content {
+    background: rgba(255, 215, 0, 0.15);
+    border: 3px solid #ffcc00;
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+    transform: scale(0.95);
+    animation: popIn 0.8s ease forwards;
+}
+
+.banner-content h2 {
+    font-size: 2.4rem;
+    color: #ffcc00;
+    text-shadow: 1px 1px 3px #000;
+    margin-bottom: 10px;
+}
+
+.banner-content p {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+#startGameBtn {
+    background: #ffcc00;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#startGameBtn:hover {
+    background: #ffaa00;
+    transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
