@@ -1,173 +1,168 @@
-// =======================
-// MEMORY CARD GAME SCRIPT
-// =======================
+let errors = 0;
+let score = 0;
+let time = 0;
+let timerInterval;
+let rows = 3;
+let columns = 6;
+let card1 = null;
+let card2 = null;
+let matchedPairs = 0;
 
-let errors = 0,
-  score = 0,
-  time = 0,
-  timerInterval,
-  rows = 4,
-  columns = 5,
-  board = [],
-  cardSet = [],
-  card1 = null,
-  card2 = null,
-  matchedPairs = 0;
+const cardList = [
+  "darkness", "fairy", "fighting", "fire", "grass",
+  "lightning", "metal", "psychic", "water"
+];
 
-// 🎵 Preload sounds
 const flipSound = new Audio("sounds/flip.mp3");
 const matchSound = new Audio("sounds/match.mp3");
 const errorSound = new Audio("sounds/error.mp3");
 const winSound = new Audio("sounds/win.mp3");
-[flipSound, matchSound, errorSound, winSound].forEach(s => s.load());
+const bgMusic = new Audio("sounds/bg-music.mp3");
+bgMusic.loop = true;
 
-// =======================
-// 🕹️ START GAME
-// =======================
+const boardDiv = document.getElementById("board");
+const startBanner = document.getElementById("startBanner");
+const winBanner = document.getElementById("winBanner");
+const restartBtn = document.getElementById("restartBtn");
+const startGameBtn = document.getElementById("startGameBtn");
+const playAgainBtn = document.getElementById("playAgainBtn");
+const musicToggle = document.getElementById("musicToggle");
+
+window.addEventListener("load", () => {
+  startBanner.classList.remove("hide");
+});
+
+startGameBtn.addEventListener("click", () => {
+  startBanner.classList.add("hide");
+  setTimeout(startGame, 300);
+});
+
+restartBtn.addEventListener("click", restartGame);
+playAgainBtn.addEventListener("click", restartGame);
+musicToggle.addEventListener("click", toggleMusic);
+
+function shuffleCards() {
+  const doubled = cardList.concat(cardList);
+  for (let i = doubled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [doubled[i], doubled[j]] = [doubled[j], doubled[i]];
+  }
+  return doubled;
+}
+
 function startGame() {
-  document.getElementById("startBanner").classList.remove("show");
-  document.getElementById("winBanner").classList.remove("show");
-
-  // Reset variables
-  score = 0;
   errors = 0;
+  score = 0;
   time = 0;
   matchedPairs = 0;
-  card1 = null;
-  card2 = null;
-
-  document.getElementById("score").innerText = score;
-  document.getElementById("errors").innerText = errors;
-  document.getElementById("time").innerText = time;
-
-  // Start timer
   clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    time++;
-    document.getElementById("time").innerText = time;
-  }, 1000);
+
+  document.getElementById("errors").innerText = errors;
+  document.getElementById("score").innerText = score;
+  document.getElementById("timer").innerText = "0s";
+  restartBtn.disabled = false;
+  winBanner.classList.remove("show");
 
   createBoard();
+  startTimer();
+
+  bgMusic.currentTime = 0;
+  bgMusic.play();
 }
 
-// =======================
-// 🎴 CREATE BOARD
-// =======================
 function createBoard() {
-  const gameBoard = document.getElementById("gameBoard");
-  gameBoard.innerHTML = "";
-  board = [];
+  const cardSet = shuffleCards();
+  boardDiv.innerHTML = "";
 
-  // Generate card set
-  let cardValues = [];
-  for (let i = 1; i <= (rows * columns) / 2; i++) {
-    cardValues.push(i, i);
-  }
-
-  cardValues = cardValues.sort(() => Math.random() - 0.5);
-  cardSet = cardValues;
-
-  // Create cards
-  for (let i = 0; i < cardValues.length; i++) {
-    const img = document.createElement("img");
-    img.src = "images/back.jpg";
-    img.dataset.value = cardValues[i];
-    img.classList.add("card");
-    img.addEventListener("click", flipCard, { once: false });
-    gameBoard.appendChild(img);
+  for (let i = 0; i < rows * columns; i++) {
+    const cardName = cardSet[i];
+    const card = document.createElement("img");
+    card.src = "images/back.jpg";
+    card.dataset.value = cardName;
+    card.classList.add("card");
+    card.addEventListener("click", () => flipCard(card));
+    boardDiv.appendChild(card);
   }
 }
 
-// =======================
-// 🔄 FLIP CARD
-// =======================
-function flipCard(e) {
-  e.preventDefault(); // Prevent touch+click double trigger
+function flipCard(card) {
+  // Prevent flipping if already flipped or matched
+  if (card === card1 || card.classList.contains("matched")) return;
 
-  const card = e.target;
-
-  // Prevent flipping same or matched cards
-  if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+  // Prevent flipping too fast
+  if (card1 && card2) return;
 
   flipSound.currentTime = 0;
   flipSound.play();
-
-  card.src = `images/${card.dataset.value}.jpg`;
-  card.classList.add("flipped");
+  card.src = "images/" + card.dataset.value + ".jpg";
 
   if (!card1) {
     card1 = card;
-    return;
+  } else {
+    card2 = card;
+    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+    setTimeout(checkMatch, 600);
   }
-
-  if (card1 === card) return;
-  card2 = card;
-
-  // Disable temporary clicks
-  document.querySelectorAll(".card:not(.matched)").forEach(c => (c.style.pointerEvents = "none"));
-
-  setTimeout(checkMatch, 600);
 }
 
-// =======================
-// ✅ CHECK MATCH
-// =======================
 function checkMatch() {
   if (!card1 || !card2) return;
 
   if (card1.dataset.value === card2.dataset.value) {
-    // ✅ Match
+    // ✅ Correct match
     matchSound.currentTime = 0;
     matchSound.play();
     score += 10;
     matchedPairs++;
     card1.classList.add("matched");
     card2.classList.add("matched");
+    card1.style.pointerEvents = "none";
+    card2.style.pointerEvents = "none";
   } else {
     // ❌ Wrong match
     errorSound.currentTime = 0;
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
-
     setTimeout(() => {
       card1.src = "images/back.jpg";
       card2.src = "images/back.jpg";
-      card1.classList.remove("flipped");
-      card2.classList.remove("flipped");
-    }, 400);
+    }, 500);
   }
 
-  // Reset
   setTimeout(() => {
     card1 = null;
     card2 = null;
     document.querySelectorAll(".card:not(.matched)").forEach(c => (c.style.pointerEvents = "auto"));
     document.getElementById("score").innerText = score;
 
-    // 🎉 Win condition
+    // 🏆 Win check
     if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
       winSound.currentTime = 0;
       winSound.play();
-      setTimeout(() => {
-        document.getElementById("winBanner").classList.add("show");
-      }, 600);
+      winBanner.classList.add("show");
     }
-  }, 500);
+  }, 700);
 }
 
-// =======================
-// 🔁 RESTART GAME
-// =======================
-function restartGame() {
+function startTimer() {
   clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    time++;
+    document.getElementById("timer").innerText = time + "s";
+  }, 1000);
+}
+
+function restartGame() {
+  winBanner.classList.remove("show");
   startGame();
 }
 
-// =======================
-// 🪩 SHOW START SCREEN ON LOAD
-// =======================
-window.addEventListener("load", () => {
-  document.getElementById("startBanner").classList.add("show");
-});
+function toggleMusic() {
+  if (bgMusic.paused) {
+    bgMusic.play();
+  } else {
+    bgMusic.pause();
+  }
+}
