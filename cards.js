@@ -111,6 +111,9 @@ function flipCard() {
 function checkMatch() {
   if (!card1 || !card2) return;
 
+  // Lock board during check
+  document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
+
   if (card1.dataset.value === card2.dataset.value) {
     // ✅ Match
     matchSound.currentTime = 0;
@@ -133,14 +136,18 @@ function checkMatch() {
     }, 500);
   }
 
-  // Reset and re-enable
+  // Reset and re-enable cards
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card:not(.matched)").forEach(c => (c.style.pointerEvents = "auto"));
+
+    document.querySelectorAll(".card").forEach(c => {
+      if (!c.classList.contains("matched")) c.style.pointerEvents = "auto";
+    });
+
     document.getElementById("score").innerText = score;
 
-    // Win condition
+    // 🎉 Win condition
     if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
       winSound.currentTime = 0;
@@ -184,4 +191,5 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
   document.getElementById("winBanner").classList.remove("show");
   restartGame();
 });
+
 
