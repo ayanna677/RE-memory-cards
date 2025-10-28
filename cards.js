@@ -122,6 +122,13 @@ function checkMatch() {
     matchedPairs++;
     card1.classList.add("matched");
     card2.classList.add("matched");
+    // Restart glow animation smoothly
+card1.style.animation = "none";
+card2.style.animation = "none";
+void card1.offsetWidth; // trigger reflow
+void card2.offsetWidth;
+card1.style.animation = "";
+card2.style.animation = "";
   } else {
     // ❌ Wrong match
     errorSound.currentTime = 0;
@@ -191,5 +198,6 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
   document.getElementById("winBanner").classList.remove("show");
   restartGame();
 });
+
 
 
