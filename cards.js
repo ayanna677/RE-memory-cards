@@ -49,9 +49,29 @@ function shuffleCards() {
 
 function startGame() {
   document.getElementById("restartBtn").disabled = false;
+  document.getElementById("winBanner").classList.remove("show");
+
+  // Reset all game values
+  errors = 0;
+  score = 0;
+  matchedPairs = 0;
+  time = 0;
+  document.getElementById("errors").innerText = 0;
+  document.getElementById("score").innerText = 0;
+  document.getElementById("timer").innerText = "0s";
+  clearInterval(timerInterval);
+
+  // Start timer immediately
+  timerInterval = setInterval(() => {
+    time++;
+    document.getElementById("timer").innerText = time + "s";
+  }, 1000);
+
+  // Create and shuffle instantly
   shuffleCards();
   createBoard();
-  startTimer();
+
+  // Play music
   bgMusic.play();
 }
 
@@ -71,57 +91,63 @@ function createBoard() {
 }
 
 function flipCard() {
+  if (this === card1 || this === card2) return;
   if (card1 && card2) return;
 
-  const currentSrc = this.src.split("/").pop();
-  if (currentSrc === "back.jpg") {
-    flipSound.play();
-    this.src = "images/" + this.dataset.value + ".jpg";
+  // Flip instantly
+  this.src = "images/" + this.dataset.value + ".jpg";
+  flipSound.currentTime = 0;
+  flipSound.play();
 
-    if (!card1) {
-      card1 = this;
-    } else {
-      card2 = this;
-      document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
-      setTimeout(checkMatch, 800);
-    }
+  if (!card1) {
+    card1 = this;
+  } else {
+    card2 = this;
+    document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
+    setTimeout(checkMatch, 400);
   }
 }
 
 function checkMatch() {
+  if (!card1 || !card2) return;
+
   if (card1.dataset.value === card2.dataset.value) {
+    // ✅ Match
+    matchSound.currentTime = 0;
     matchSound.play();
     score += 10;
     matchedPairs++;
-    card1.style.pointerEvents = "none";
-    card2.style.pointerEvents = "none";
-
-    if (matchedPairs === (rows * columns) / 2) {
-      clearInterval(timerInterval);
-      winSound.play();
-
-      const banner = document.getElementById("winBanner");
-      banner.classList.add("show");
-
-      document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
-    }
+    card1.classList.add("matched");
+    card2.classList.add("matched");
   } else {
+    // ❌ Wrong match
+    errorSound.currentTime = 0;
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
 
+    // Flip back quickly
     setTimeout(() => {
       card1.src = "images/back.jpg";
       card2.src = "images/back.jpg";
-    }, 600);
+    }, 500);
   }
 
+  // Reset and re-enable
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "auto"));
+    document.querySelectorAll(".card:not(.matched)").forEach(c => (c.style.pointerEvents = "auto"));
     document.getElementById("score").innerText = score;
-  }, 900);
+
+    // Win condition
+    if (matchedPairs === (rows * columns) / 2) {
+      clearInterval(timerInterval);
+      winSound.currentTime = 0;
+      winSound.play();
+      document.getElementById("winBanner").classList.add("show");
+    }
+  }, 600);
 }
 
 function startTimer() {
@@ -158,3 +184,4 @@ document.getElementById("playAgainBtn").addEventListener("click", () => {
   document.getElementById("winBanner").classList.remove("show");
   restartGame();
 });
+
