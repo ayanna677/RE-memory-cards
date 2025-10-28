@@ -4,15 +4,7 @@ let time = 0;
 let timerInterval;
 
 const cardList = [
-  "darkness",
-  "fairy",
-  "fighting",
-  "fire",
-  "grass",
-  "lightning",
-  "metal",
-  "psychic",
-  "water"
+  "darkness", "fairy", "fighting", "fire", "grass", "lightning", "metal", "psychic", "water"
 ];
 
 let cardSet = [];
@@ -21,9 +13,7 @@ let columns = 6;
 let card1 = null;
 let card2 = null;
 let matchedPairs = 0;
-let gameStarted = false;
 
-// Sounds
 const flipSound = new Audio("sounds/flip.mp3");
 const matchSound = new Audio("sounds/match.mp3");
 const errorSound = new Audio("sounds/error.mp3");
@@ -31,22 +21,22 @@ const winSound = new Audio("sounds/win.mp3");
 const bgMusic = new Audio("sounds/bg-music.mp3");
 bgMusic.loop = true;
 
-// Buttons
 document.getElementById("restartBtn").addEventListener("click", restartGame);
 document.getElementById("musicToggle").addEventListener("click", toggleMusic);
-document.getElementById("playAgainBtn").addEventListener("click", restartGame);
 
-// Start Banner Logic
+// 🟡 Show start banner when page loads
 window.addEventListener("load", () => {
   document.getElementById("startBanner").classList.remove("hide");
 });
 
+// 🟢 Start game when clicking "Start Game"
 document.getElementById("startGameBtn").addEventListener("click", () => {
-  if (gameStarted) return; // prevent double start
-  gameStarted = true;
+  const startBanner = document.getElementById("startBanner");
+  startBanner.classList.add("hide");
 
-  document.getElementById("startBanner").classList.add("hide");
-  setTimeout(startGame, 500);
+  setTimeout(() => {
+    startGame();
+  }, 600);
 });
 
 function shuffleCards() {
@@ -58,14 +48,7 @@ function shuffleCards() {
 }
 
 function startGame() {
-  errors = 0;
-  score = 0;
-  matchedPairs = 0;
-  document.getElementById("errors").innerText = 0;
-  document.getElementById("score").innerText = 0;
-  document.getElementById("timer").innerText = "0s";
   document.getElementById("restartBtn").disabled = false;
-
   shuffleCards();
   createBoard();
   startTimer();
@@ -73,64 +56,56 @@ function startGame() {
 }
 
 function createBoard() {
-  const board = document.getElementById("board");
-  board.innerHTML = "";
+  const boardDiv = document.getElementById("board");
+  boardDiv.innerHTML = "";
 
   for (let i = 0; i < rows * columns; i++) {
+    const cardName = cardSet[i];
     const card = document.createElement("img");
     card.src = "images/back.jpg";
-    card.dataset.value = cardSet[i];
+    card.dataset.value = cardName;
     card.classList.add("card");
     card.addEventListener("click", flipCard);
-    board.appendChild(card);
+    boardDiv.appendChild(card);
   }
 }
 
 function flipCard() {
-  if (this === card1 || this === card2) return; // ignore double click on same card
-  if (card1 && card2) return; // wait until match check done
+  if (card1 && card2) return;
 
-  // Flip instantly
-  this.src = "images/" + this.dataset.value + ".jpg";
-  flipSound.currentTime = 0;
-  flipSound.play();
+  const currentSrc = this.src.split("/").pop();
+  if (currentSrc === "back.jpg") {
+    flipSound.play();
+    this.src = "images/" + this.dataset.value + ".jpg";
 
-  if (!card1) {
-    card1 = this;
-  } else {
-    card2 = this;
-
-    // Temporarily disable all clicks until check finishes
-    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
-
-    setTimeout(checkMatch, 500); // short delay for visual
+    if (!card1) {
+      card1 = this;
+    } else {
+      card2 = this;
+      document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
+      setTimeout(checkMatch, 800);
+    }
   }
 }
 
 function checkMatch() {
-  if (!card1 || !card2) return;
-
   if (card1.dataset.value === card2.dataset.value) {
-    // ✅ Correct pair
-    matchSound.currentTime = 0;
     matchSound.play();
     score += 10;
     matchedPairs++;
-
-    card1.classList.add("matched");
-    card2.classList.add("matched");
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
 
     if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
-      winSound.currentTime = 0;
       winSound.play();
-      document.getElementById("winBanner").classList.add("show");
+
+      const banner = document.getElementById("winBanner");
+      banner.classList.add("show");
+
+      document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
     }
   } else {
-    // ❌ Wrong pair
-    errorSound.currentTime = 0;
     errorSound.play();
     errors++;
     document.getElementById("errors").innerText = errors;
@@ -138,21 +113,15 @@ function checkMatch() {
     setTimeout(() => {
       card1.src = "images/back.jpg";
       card2.src = "images/back.jpg";
-    }, 400);
+    }, 600);
   }
 
-  // Re-enable cards + reset selections
   setTimeout(() => {
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card:not(.matched)").forEach(c => c.style.pointerEvents = "auto");
+    document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "auto"));
     document.getElementById("score").innerText = score;
-  }, 600);
-}
-
-  card1 = null;
-  card2 = null;
-  document.getElementById("score").innerText = score;
+  }, 900);
 }
 
 function startTimer() {
@@ -165,15 +134,27 @@ function startTimer() {
 }
 
 function restartGame() {
-  document.getElementById("winBanner").classList.remove("show");
+  errors = 0;
+  score = 0;
+  matchedPairs = 0;
+  document.getElementById("errors").innerText = 0;
+  document.getElementById("score").innerText = 0;
+  document.getElementById("timer").innerText = "0s";
   clearInterval(timerInterval);
-  bgMusic.pause();
-  gameStarted = false;
-  document.getElementById("startBanner").classList.remove("hide");
+  document.getElementById("winBanner").classList.remove("show");
+  startGame();
 }
 
 function toggleMusic() {
-  if (bgMusic.paused) bgMusic.play();
-  else bgMusic.pause();
+  if (bgMusic.paused) {
+    bgMusic.play();
+  } else {
+    bgMusic.pause();
+  }
 }
 
+// 🟢 Play Again Button
+document.getElementById("playAgainBtn").addEventListener("click", () => {
+  document.getElementById("winBanner").classList.remove("show");
+  restartGame();
+});
