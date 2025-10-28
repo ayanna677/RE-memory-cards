@@ -1,133 +1,166 @@
-// =======================
-// MEMORY CARD GAME SCRIPT (Optimized)
-// =======================
+/* ==========================================================
+   🧠 MEMORY CARD GAME — Clean Expanded Version
+   ========================================================== */
 
-let errors = 0,
-  score = 0,
-  time = 0,
-  timerInterval,
-  rows = 4,
-  columns = 5,
-  card1 = null,
-  card2 = null,
-  matchedPairs = 0;
+let errors = 0;
+let score = 0;
+let time = 0;
+let timerInterval = null;
 
-// 🎵 Sounds
-const flipSound = new Audio("sounds/flip.mp3");
+let rows = 4;
+let columns = 5;
+
+let card1 = null;
+let card2 = null;
+let matchedPairs = 0;
+
+/* ==========================================================
+   🎵 SOUND SETUP
+   ========================================================== */
+
+const flipSound  = new Audio("sounds/flip.mp3");
 const matchSound = new Audio("sounds/match.mp3");
 const errorSound = new Audio("sounds/error.mp3");
-const winSound = new Audio("sounds/win.mp3");
-[flipSound, matchSound, errorSound, winSound].forEach(s => {
-  s.preload = "auto";
-  s.volume = 0.8;
-});
+const winSound   = new Audio("sounds/win.mp3");
 
-// =======================
-// 🪩 ON LOAD
-// =======================
-window.addEventListener("load", () => {
-  document.getElementById("startBanner").classList.add("show");
-});
+// Preload sounds on first user click (bypasses browser autoplay restrictions)
+document.addEventListener("click", () => {
+  [flipSound, matchSound, errorSound, winSound].forEach(s => s.load());
+}, { once: true });
 
-// =======================
-// 🕹️ START GAME
-// =======================
+/* ==========================================================
+   🕹️ START GAME
+   ========================================================== */
+
 function startGame() {
-  document.getElementById("startBanner").classList.remove("show");
-  document.getElementById("startBanner").style.display = "none"; // 🧩 Add this line
-  document.getElementById("winBanner").classList.remove("show");
+  const startBanner = document.getElementById("startBanner");
+  const winBanner   = document.getElementById("winBanner");
 
-  // Reset everything
-  score = 0;
+  // Hide both banners
+  startBanner.classList.remove("show");
+  winBanner.classList.remove("show");
+
+  startBanner.style.display = "none";
+  winBanner.style.display = "none";
+
+  // Reset stats
   errors = 0;
+  score = 0;
   time = 0;
   matchedPairs = 0;
-  card1 = card2 = null;
+  card1 = null;
+  card2 = null;
 
+  // Update UI
   document.getElementById("score").innerText = score;
   document.getElementById("errors").innerText = errors;
   document.getElementById("time").innerText = time;
 
-  // Timer
+  // Start timer
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     time++;
     document.getElementById("time").innerText = time;
   }, 1000);
 
+  // Create the game board
   createBoard();
 }
 
-// =======================
-// 🎴 CREATE BOARD
-// =======================
-function createBoard() {
-  const gameBoard = document.getElementById("gameBoard");
-  gameBoard.innerHTML = "";
+/* ==========================================================
+   🎴 CREATE BOARD
+   ========================================================== */
 
-  // Make card pairs
+function createBoard() {
+  const board = document.getElementById("gameBoard");
+  board.innerHTML = "";
+
+  // Create paired values
   let cardValues = [];
   for (let i = 1; i <= (rows * columns) / 2; i++) {
     cardValues.push(i, i);
   }
 
-  // Shuffle
+  // Shuffle cards
   cardValues.sort(() => Math.random() - 0.5);
 
-  // Create cards
-  for (let value of cardValues) {
-    const card = document.createElement("img");
-    card.src = "images/back.jpg";
-    card.dataset.value = value;
-    card.classList.add("card");
-    card.addEventListener("click", flipCard);
-    gameBoard.appendChild(card);
-  }
+  // Generate card elements
+  cardValues.forEach(value => {
+    const img = document.createElement("img");
+    img.src = "images/back.jpg";
+    img.dataset.value = value;
+    img.classList.add("card");
+
+    img.addEventListener("click", flipCard);
+    board.appendChild(img);
+  });
 }
 
-// =======================
-// 🔄 FLIP CARD
-// =======================
-function flipCard() {
-  if (this.classList.contains("flipped") || this.classList.contains("matched")) return;
-  if (card1 && card2) return; // prevent third click
+/* ==========================================================
+   🔄 FLIP CARD
+   ========================================================== */
 
-  this.classList.add("flipped");
-  this.src = `images/${this.dataset.value}.jpg`;
+function flipCard(e) {
+  const card = e.target;
 
+  // Prevent flipping matched or already flipped cards
+  if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+
+  // Play flip sound
   flipSound.currentTime = 0;
   flipSound.play();
 
+  // Flip visual
+  card.src = `images/${card.dataset.value}.jpg`;
+  card.classList.add("flipped");
+
+  // First card logic
   if (!card1) {
-    card1 = this;
-  } else {
-    card2 = this;
-    document.querySelectorAll(".card").forEach(c => (c.style.pointerEvents = "none"));
-    setTimeout(checkMatch, 500);
+    card1 = card;
+    return;
   }
+
+  // Avoid double clicking same card
+  if (card === card1) return;
+
+  // Second card selected
+  card2 = card;
+
+  // Temporarily disable all cards
+  document.querySelectorAll(".card:not(.matched)").forEach(c => c.style.pointerEvents = "none");
+
+  // Check for match after short delay
+  setTimeout(checkMatch, 600);
 }
 
-// =======================
-// ✅ CHECK MATCH
-// =======================
+/* ==========================================================
+   ✅ CHECK MATCH
+   ========================================================== */
+
 function checkMatch() {
   if (!card1 || !card2) return;
 
+  // If cards match
   if (card1.dataset.value === card2.dataset.value) {
-    // ✅ Match
+
     matchSound.currentTime = 0;
     matchSound.play();
 
-    card1.classList.add("matched");
-    card2.classList.add("matched");
     score += 10;
     matchedPairs++;
+
+    card1.classList.add("matched");
+    card2.classList.add("matched");
+
   } else {
-    // ❌ Wrong match
+    // If not match
     errorSound.currentTime = 0;
     errorSound.play();
-    errors++;
 
+    errors++;
+    document.getElementById("errors").innerText = errors;
+
+    // Flip back after short delay
     setTimeout(() => {
       card1.src = "images/back.jpg";
       card2.src = "images/back.jpg";
@@ -136,33 +169,59 @@ function checkMatch() {
     }, 400);
   }
 
-  // Reset
+  // Reset and restore card clicks
   setTimeout(() => {
-    document.getElementById("score").innerText = score;
-    document.getElementById("errors").innerText = errors;
-
     card1 = null;
     card2 = null;
-    document.querySelectorAll(".card:not(.matched)").forEach(c => (c.style.pointerEvents = "auto"));
 
-    // 🎉 Win condition
+    // Re-enable unflipped cards
+    document.querySelectorAll(".card:not(.matched)").forEach(c => c.style.pointerEvents = "auto");
+
+    // Update score
+    document.getElementById("score").innerText = score;
+
+    // Check win condition
     if (matchedPairs === (rows * columns) / 2) {
-      clearInterval(timerInterval);
-      winSound.currentTime = 0;
-      winSound.play();
-
-      setTimeout(() => {
-        document.getElementById("winBanner").classList.add("show");
-      }, 600);
+      endGame();
     }
+
   }, 600);
 }
 
-// =======================
-// 🔁 RESTART GAME
-// =======================
+/* ==========================================================
+   🏁 END GAME
+   ========================================================== */
+
+function endGame() {
+  clearInterval(timerInterval);
+
+  // Play win sound
+  winSound.currentTime = 0;
+  winSound.play();
+
+  // Show win banner after slight delay
+  setTimeout(() => {
+    const winBanner = document.getElementById("winBanner");
+    winBanner.classList.add("show");
+    winBanner.style.display = "flex";
+  }, 600);
+}
+
+/* ==========================================================
+   🔁 RESTART GAME
+   ========================================================== */
+
 function restartGame() {
   clearInterval(timerInterval);
   startGame();
 }
 
+/* ==========================================================
+   🚀 INITIALIZE ON LOAD
+   ========================================================== */
+
+window.addEventListener("load", () => {
+  const banner = document.getElementById("startBanner");
+  banner.classList.add("show");
+  banner.style.display = "flex";
+});
