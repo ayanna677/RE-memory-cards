@@ -1,10 +1,15 @@
 /* =========================
+   FONT IMPORT
+========================= */
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap');
+
+/* =========================
    GLOBAL STYLE
 ========================= */
 body {
     background: url("./pokemon-bg.jpg") no-repeat center center fixed;
     background-size: cover;
-    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    font-family: 'Rubik Bubbles', cursive;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,6 +18,7 @@ body {
     margin: 0;
     color: #fff;
     text-align: center;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 255, 255, 0.6);
 }
 
 /* =========================
@@ -24,21 +30,23 @@ header {
 }
 
 h1 {
-    font-size: 2.8rem;
+    font-size: 3rem;
     font-weight: 700;
-    letter-spacing: 1.2px;
+    letter-spacing: 2px;
+    font-family: 'Rubik Bubbles', cursive;
     background: linear-gradient(90deg, #ffcc00, #ff8800, #ffee33, #ffcc00);
     background-size: 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: shimmer 4s infinite linear;
-    text-shadow: 0 0 20px rgba(255, 200, 0, 0.8);
+    text-shadow: 0 0 25px rgba(255, 200, 0, 0.9);
 }
 
 h2 {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: #fff;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    font-family: 'Rubik Bubbles', cursive;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
 }
 
 /* =========================
@@ -46,8 +54,9 @@ h2 {
 ========================= */
 .stats {
     margin: 15px 0;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 600;
+    font-family: 'Rubik Bubbles', cursive;
     background: rgba(255, 255, 255, 0.12);
     padding: 12px 25px;
     border-radius: 15px;
@@ -60,7 +69,7 @@ h2 {
     display: inline-block;
     margin: 0 12px;
     color: #ffea80;
-    text-shadow: 0 0 8px #ffd700, 0 0 16px #ffb300;
+    text-shadow: 0 0 10px #ffd700, 0 0 25px #ffb300, 0 0 40px #ff8800;
 }
 
 /* =========================
@@ -73,22 +82,23 @@ h2 {
 button {
     background: linear-gradient(90deg, #ffcc00, #ffaa00);
     border: none;
-    padding: 12px 20px;
+    padding: 12px 22px;
     margin: 0 6px;
     border-radius: 10px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
+    font-family: 'Rubik Bubbles', cursive;
     cursor: pointer;
     color: #000;
-    box-shadow: 0 0 20px rgba(255, 200, 0, 0.8);
+    box-shadow: 0 0 25px rgba(255, 200, 0, 0.9);
     transition: 0.3s ease;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
 }
 
 button:hover {
     background: linear-gradient(90deg, #ffd84d, #ff9f00);
     transform: scale(1.1);
-    box-shadow: 0 0 35px rgba(255, 220, 0, 1);
+    box-shadow: 0 0 40px rgba(255, 220, 0, 1);
 }
 
 /* =========================
@@ -103,7 +113,7 @@ button:hover {
     padding: 20px;
     border-radius: 20px;
     border: 3px solid rgba(255,255,255,0.4);
-    box-shadow: 0 0 25px rgba(255, 220, 100, 0.6);
+    box-shadow: 0 0 30px rgba(255, 220, 100, 0.7);
 }
 
 .card {
@@ -112,13 +122,13 @@ button:hover {
     border-radius: 12px;
     object-fit: cover;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    transition: transform 0.25s ease, box-shadow 0.35s ease;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
 }
 
 .card:hover {
     transform: scale(1.08);
-    box-shadow: 0 0 25px rgba(255, 230, 100, 0.8);
+    box-shadow: 0 0 35px rgba(255, 230, 100, 0.9);
 }
 
 /* =========================
@@ -152,8 +162,8 @@ button:hover {
     border: 3px solid #ffcc00;
     padding: 50px 70px;
     border-radius: 20px;
-    text-shadow: 0 0 15px rgba(255, 255, 180, 0.9);
-    box-shadow: 0 0 35px rgba(255, 220, 100, 0.6);
+    text-shadow: 0 0 20px rgba(255, 255, 180, 1);
+    box-shadow: 0 0 45px rgba(255, 220, 100, 0.9);
     animation: glowPulse 2s infinite alternate ease-in-out;
 }
 
@@ -192,14 +202,15 @@ button:hover {
     padding: 40px 60px;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
     transform: scale(0.95);
     animation: popIn 0.8s ease forwards;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
 }
 
 .banner-content h2 {
     font-size: 2.4rem;
+    font-family: 'Rubik Bubbles', cursive;
     background: linear-gradient(90deg, #ffcc00, #ffee66, #ff8800);
     background-size: 250%;
     -webkit-background-clip: text;
@@ -213,7 +224,7 @@ button:hover {
     font-size: 1.2rem;
     margin-bottom: 20px;
     color: #ffecb3;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
 }
 
 #startGameBtn, #playAgainBtn {
@@ -221,18 +232,19 @@ button:hover {
     border: none;
     padding: 12px 28px;
     border-radius: 10px;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 600;
+    font-family: 'Rubik Bubbles', cursive;
     cursor: pointer;
     transition: 0.3s;
     color: #000;
-    box-shadow: 0 0 25px rgba(255, 200, 0, 0.8);
+    box-shadow: 0 0 35px rgba(255, 200, 0, 0.9);
 }
 
 #startGameBtn:hover, #playAgainBtn:hover {
     background: linear-gradient(90deg, #ffea33, #ff9900);
     transform: scale(1.1);
-    box-shadow: 0 0 35px rgba(255, 220, 0, 1);
+    box-shadow: 0 0 45px rgba(255, 220, 0, 1);
 }
 
 /* =========================
@@ -245,7 +257,7 @@ button:hover {
 
 @keyframes glowPulse {
     0% { text-shadow: 0 0 10px #fff, 0 0 25px #ffcc00, 0 0 45px #ffaa00; }
-    100% { text-shadow: 0 0 15px #fff6b0, 0 0 40px #ffd700, 0 0 60px #ff8800; }
+    100% { text-shadow: 0 0 20px #fff6b0, 0 0 45px #ffd700, 0 0 65px #ff8800; }
 }
 
 @keyframes fadeIn {
