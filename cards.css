@@ -1,7 +1,7 @@
 body {
     background: url("./pokemon-bg.jpg") no-repeat center center fixed;
     background-size: cover;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10,16 +10,38 @@ body {
     margin: 0;
     color: #fff;
     text-align: center;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
 header {
     margin-top: 40px;
-    text-shadow: 1px 1px 3px #000;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #ffcc00, #ff8800);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(255, 200, 0, 0.6);
+}
+
+h2 {
+    font-size: 1.4rem;
+    color: #fff;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
 }
 
 .stats {
     margin: 15px 0;
     font-size: 1.2rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
 .buttons {
@@ -33,12 +55,16 @@ button {
     margin: 0 6px;
     border-radius: 10px;
     font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
+    box-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
 }
 
 button:hover {
     background: #ffaa00;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 180, 0, 0.6);
 }
 
 #board {
@@ -92,6 +118,13 @@ button:hover {
     visibility: visible;
 }
 
+#winBanner .banner-content {
+    text-shadow: 0 0 10px rgba(255, 255, 200, 0.8),
+                 0 0 20px rgba(255, 220, 100, 0.6),
+                 0 0 40px rgba(255, 200, 0, 0.4);
+    animation: glowPulse 2s infinite alternate ease-in-out;
+}
+
 #playAgainBtn {
     background: #ffcc00;
     border: none;
@@ -100,11 +133,13 @@ button:hover {
     border-radius: 10px;
     font-size: 1.2rem;
     cursor: pointer;
+    font-weight: 600;
     transition: 0.3s;
 }
 
 #playAgainBtn:hover {
     background: #ffaa00;
+    transform: scale(1.1);
 }
 
 /* =========================
@@ -143,18 +178,24 @@ button:hover {
     box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
     transform: scale(0.95);
     animation: popIn 0.8s ease forwards;
-    text-shadow: 1px 1px 3px #000;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 .banner-content h2 {
     font-size: 2.4rem;
-    color: #ffcc00;
+    background: linear-gradient(90deg, #ffcc00, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
     margin-bottom: 10px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
 }
 
 .banner-content p {
     font-size: 1.1rem;
     margin-bottom: 20px;
+    color: #eee;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 #startGameBtn {
@@ -163,13 +204,16 @@ button:hover {
     padding: 12px 28px;
     border-radius: 10px;
     font-size: 1.2rem;
+    font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
 }
 
 #startGameBtn:hover {
     background: #ffaa00;
     transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(255, 200, 0, 0.7);
 }
 
 /* Animations */
@@ -181,4 +225,9 @@ button:hover {
 @keyframes popIn {
     0% { transform: scale(0.7); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glowPulse {
+    0% { text-shadow: 0 0 8px #fff, 0 0 16px #ffcc00, 0 0 32px #ffaa00; }
+    100% { text-shadow: 0 0 12px #fff8b0, 0 0 25px #ffd700, 0 0 45px #ff8800; }
 }
