@@ -87,39 +87,49 @@ function createBoard() {
 }
 
 function flipCard() {
-  if (card1 && card2) return;
-  if (this.src.includes(this.dataset.value)) return; // already flipped
+  if (this === card1 || this === card2) return; // ignore double click on same card
+  if (card1 && card2) return; // wait until match check done
 
+  // Flip instantly
+  this.src = "images/" + this.dataset.value + ".jpg";
   flipSound.currentTime = 0;
   flipSound.play();
-  this.src = "images/" + this.dataset.value + ".jpg";
 
   if (!card1) {
     card1 = this;
   } else {
     card2 = this;
-    setTimeout(checkMatch, 400);
+
+    // Temporarily disable all clicks until check finishes
+    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+
+    setTimeout(checkMatch, 500); // short delay for visual
   }
 }
 
 function checkMatch() {
+  if (!card1 || !card2) return;
+
   if (card1.dataset.value === card2.dataset.value) {
+    // ✅ Correct pair
     matchSound.currentTime = 0;
     matchSound.play();
+    score += 10;
+    matchedPairs++;
 
+    card1.classList.add("matched");
+    card2.classList.add("matched");
     card1.style.pointerEvents = "none";
     card2.style.pointerEvents = "none";
-    matchedPairs++;
-    score += 10;
 
     if (matchedPairs === (rows * columns) / 2) {
       clearInterval(timerInterval);
+      winSound.currentTime = 0;
       winSound.play();
-      bgMusic.pause();
-
       document.getElementById("winBanner").classList.add("show");
     }
   } else {
+    // ❌ Wrong pair
     errorSound.currentTime = 0;
     errorSound.play();
     errors++;
@@ -130,6 +140,15 @@ function checkMatch() {
       card2.src = "images/back.jpg";
     }, 400);
   }
+
+  // Re-enable cards + reset selections
+  setTimeout(() => {
+    card1 = null;
+    card2 = null;
+    document.querySelectorAll(".card:not(.matched)").forEach(c => c.style.pointerEvents = "auto");
+    document.getElementById("score").innerText = score;
+  }, 600);
+}
 
   card1 = null;
   card2 = null;
@@ -157,3 +176,4 @@ function toggleMusic() {
   if (bgMusic.paused) bgMusic.play();
   else bgMusic.pause();
 }
+
