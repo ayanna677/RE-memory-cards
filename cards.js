@@ -34,20 +34,21 @@ window.addEventListener("load", () => {
 // =======================
 function startGame() {
   document.getElementById("startBanner").classList.remove("show");
+  document.getElementById("startBanner").style.display = "none"; // 🧩 Add this line
   document.getElementById("winBanner").classList.remove("show");
 
-  // Reset stats
-  errors = 0;
+  // Reset everything
   score = 0;
+  errors = 0;
   time = 0;
   matchedPairs = 0;
   card1 = card2 = null;
 
-  document.getElementById("score").innerText = 0;
-  document.getElementById("errors").innerText = 0;
-  document.getElementById("time").innerText = "0";
+  document.getElementById("score").innerText = score;
+  document.getElementById("errors").innerText = errors;
+  document.getElementById("time").innerText = time;
 
-  // Start timer
+  // Timer
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     time++;
@@ -164,3 +165,4 @@ function restartGame() {
   clearInterval(timerInterval);
   startGame();
 }
+
